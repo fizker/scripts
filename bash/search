@@ -1,0 +1,2 @@
+#!/bin/sh
+find $1 -type f "${@: 3}" | xargs grep -iE "$2"
