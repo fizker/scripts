@@ -1,0 +1,5 @@
+#!/bin/sh
+
+branch_ref=`git symbolic-ref --quiet HEAD`
+upstream=`git for-each-ref --format='%(upstream:short)' $branch_ref`
+git merge --ff-only $upstream
