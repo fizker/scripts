@@ -1,0 +1,10 @@
+#!/bin/sh
+
+target=$1
+
+if [ -z "$target" ]
+then
+	target="master"
+fi
+
+git push origin HEAD:$target
