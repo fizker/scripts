@@ -10,7 +10,11 @@ cp.exec('git rev-parse --verify HEAD', function(err) {
 	cp.exec('git diff --cached --no-color', function(err, diff) {
 		var lines = diff.replace(/diff --git(.|\n)*@@.*\n/g, '')
 
-		if(/^\+.*[^\r]?\n/m.test(lines)) return process.exit(1)
+		if(/^\+.*[^\r]?\n/m.test(lines)) {
+			console.log('You have mixed line-endings. Please normalize to %s.',
+				enforcedLineEnding.replace('\r', '\\r').replace('\n', '\\n'))
+			return process.exit(1)
+		}
 
 		process.exit(0)
 	})
