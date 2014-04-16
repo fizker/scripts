@@ -1,0 +1,9 @@
+#!/bin/sh
+
+set -e
+
+real_script=$(readlink `pwd`/.git/hooks/pre-commit)
+real_path=$(dirname "$real_script")
+
+eval "$real_path/diff-check"
+eval "$real_path/restrict-dot-only.js"
