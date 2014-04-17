@@ -14,8 +14,8 @@ module.exports = function(diff) {
 			return file.name.match(/\.js$/)
 		})
 
-	files.filter(function(file) {
-		return file.diff.match(/\n+.*(describe|it)\.only/)
+	files = files.filter(function(file) {
+		return file.diff.match(/\n\+.*(describe|it)\.only/)
 	})
 
 	if(files.length) {
