@@ -1,0 +1,23 @@
+#!/bin/sh
+
+#
+# This script copies the git sha passed in to the pasteboard (clipboard)
+# after prepending a url for a server.
+#
+
+input=$1
+sha=$(node -e "var sha='$input'
+if(sha.match(/-[0-9]+/)) sha = ''
+process.stdout.write(sha)")
+
+if [ "$sha" == "" ]; then
+	sha=$(git log $input --format=%h)
+fi
+
+links=''
+for sha in $sha; do
+links=$(echo "http://phab.econintra.local/rTF$sha
+$links")
+done
+
+echo $links | tr " " "\n" | pbcopy
