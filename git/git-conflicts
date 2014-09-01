@@ -1,0 +1,28 @@
+#!/bin/sh
+
+read -d "" node_script <<EOF
+	var lines = ''
+	process.stdin.on('data', function(data) {
+		lines += data.toString() + '\n'
+	})
+	process.stdin.on('end', function() {
+		var conflicts = lines
+			.split('\n')
+			.map(function(line) {
+				return line.trim()
+			})
+			.filter(function(line) {
+				return line.indexOf('UU') == 0
+			})
+			.map(function(line) {
+				return line.substring(2).trim()
+			})
+			.join('\n')
+		console.log(conflicts)
+	})
+EOF
+
+git status --porcelain | \
+	grep -E ^UU | \
+	node -e "$node_script" | \
+	xargs open -a SubEthaEdit
