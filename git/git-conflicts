@@ -3,11 +3,11 @@
 read -d "" node_script <<EOF
 	var lines = ''
 	process.stdin.on('data', function(data) {
-		lines += data.toString() + '\n'
+		lines += data.toString()
 	})
 	process.stdin.on('end', function() {
 		var conflicts = lines
-			.split('\n')
+			.split('\\\n')
 			.map(function(line) {
 				return line.trim()
 			})
