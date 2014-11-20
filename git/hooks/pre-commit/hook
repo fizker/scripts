@@ -2,7 +2,7 @@
 
 set -e
 
-real_script=$(readlink `pwd`/.git/hooks/pre-commit)
+real_script=$0
 real_path=$(dirname "$real_script")
 
 $real_path/diff-check
