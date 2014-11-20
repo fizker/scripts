@@ -1,5 +1,9 @@
 #!/bin/sh
 
+until [ -e ".git" ]; do
+	cd ..
+done
+
 read -d "" node_script <<EOF
 	var lines = ''
 	process.stdin.on('data', function(data) {
@@ -15,9 +19,10 @@ read -d "" node_script <<EOF
 				return line.indexOf('UU') == 0
 			})
 			.map(function(line) {
-				return line.substring(2).trim()
+				return line.substring(2)
+					.trim()
 			})
-			.join('\n')
+			.join('\\\n')
 		console.log(conflicts)
 	})
 EOF
