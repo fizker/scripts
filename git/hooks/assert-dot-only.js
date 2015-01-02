@@ -3,6 +3,8 @@ module.exports = function(diff) {
 		.slice(1)
 		.map(function(file) {
 			var lines = file.split(/\n/)
+			if(lines.length < 3) return null
+
 			var name = lines[2].replace(/\+\+\+ .\/(.+)/, '<root>/$1')
 			return {
 				name: name,
@@ -11,7 +13,7 @@ module.exports = function(diff) {
 			}
 		})
 		.filter(function(file) {
-			return file.name.match(/\.js$/)
+			return file && file.name.match(/\.js$/)
 		})
 
 	files = files.filter(function(file) {
