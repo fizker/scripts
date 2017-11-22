@@ -22,6 +22,17 @@
 remote="$1"
 url="$2"
 
+assert_faulty_commit() {
+	sha=$1
+
+	result=`git merge-base --is-ancestor $sha $remote/HEAD`
+
+	if [ $? -ne 0 ]; then
+		git log -1 $sha
+		exit 1
+	fi
+}
+
 z40=0000000000000000000000000000000000000000
 
 IFS=' '
@@ -44,16 +55,15 @@ do
 		# Check for WIP commit
 		tmp_commit=`git rev-list -n 1 --grep '^[tT][mM][pP]' "$range"`
 		wip_commit=`git rev-list -n 1 --grep '^[wW][iI][pP]' "$range"`
+
 		if [ -n "$tmp_commit" ]
 		then
-			echo "Found tmp commit in $local_ref, not pushing"
-			exit 1
+			assert_faulty_commit $tmp_commit
 		fi
 
 		if [ -n "$wip_commit" ]
 		then
-			echo "Found tmp commit in $local_ref, not pushing"
-			exit 1
+			assert_faulty_commit $wip_commit
 		fi
 	fi
 done
