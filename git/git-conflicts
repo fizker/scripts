@@ -22,6 +22,9 @@ read -d "" node_script <<EOF
 				return line.substring(2)
 					.trim()
 			})
+			.map(function(line) {
+				return '"' + line +'"'
+			})
 			.join('\\\n')
 		console.log(conflicts)
 	})
