@@ -4,6 +4,9 @@ module.exports = function(diff) {
 		.map(function(file) {
 			var lines = file.split(/\n/)
 			if(lines.length < 3) return null
+			if(lines[0].startsWith('new file')) {
+				lines = lines.slice(1)
+			}
 
 			var name = lines[2].replace(/\+\+\+ .\/(.+)/, '<root>/$1')
 			return {
