@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# To use, add `complete -C <path to this file> npm` to .profile or .bash-profile
+
+if [ "$3" != 'run' ]; then
+	exit 0
+fi
+
+userInput=$2
+
+list_run_commands() {
+	node -e "
+		const package = require('./package.json')
+		const scripts = Object.keys(package.scripts)
+		const matchingScripts = scripts.filter(x=>x.startsWith('$userInput'))
+		console.log(matchingScripts.join('\n'))
+	"
+}
+
+while [ "`pwd`" != '/' ]
+do
+	if [ -e "package.json" ]; then
+		list_run_commands
+		exit 0
+	else
+		cd ..
+	fi
+done
