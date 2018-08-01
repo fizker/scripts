@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# To use, add `complete -C <path to this file> npm` to .profile or .bash-profile
+# To use, add `complete -o default -C <path to this file> npm` to .profile or .bash-profile
+# The `-o default` part tells bash to use the default file-completion if this script returns no matches
 
 if [ "$3" != 'run' ]; then
 	exit 0
