@@ -9,7 +9,7 @@ const utf8bom = '\ufeff'
 cp.exec('git diff --cached --no-color', function(err, diff) {
 	const files = parseDiff(diff)
 
-	const filesWithBOM = files.filter(x => x.diff.includes(utf8bom))
+	const filesWithBOM = files.filter(x => x.addedLines.some(x => x.includes(utf8bom)))
 
 	if(filesWithBOM.length > 0) {
 		filesWithBOM.forEach(file => {

@@ -16,6 +16,8 @@ module.exports = function(diff) {
 				name: name,
 				diff: file,
 				lines: lines,
+				addedLines: lines.filter(x => x.startsWith('+')),
+				removedLines: lines.filter(x => x.startsWith('-')),
 			}
 		})
 
