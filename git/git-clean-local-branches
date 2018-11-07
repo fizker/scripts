@@ -1,0 +1,133 @@
+#!/usr/bin/env node
+
+const child_process = require('child_process')
+
+class ExecError extends Error {
+	constructor(err, stdout, stderr) {
+		super(stderr)
+
+		this.error = err
+		this.stdout = stdout
+		this.stderr = stderr
+	}
+}
+class NotFullyMergedError extends Error {}
+
+function exec(command, options) {
+	return new Promise((resolve, reject) => {
+		child_process.exec(command, options, (err, stdout, stderr) => {
+			if(err) {
+				reject(new ExecError(err, stdout, stderr))
+			} else {
+				resolve({ stdout, stderr })
+			}
+		})
+	})
+}
+
+async function getBranchList(remote = null) {
+	const baseCommand = 'git branch --no-color'
+	const command = remote == null ? baseCommand : baseCommand + ' --remote'
+	const { stdout } = await exec(command)
+	return stdout.split('\n')
+		.map(x => x.trim())
+		.filter(x => x.length > 0)
+		.filter(x => remote == null
+			? true
+			: x.startsWith(remote + '/')
+		)
+		.map(branch => {
+			if(branch.startsWith('*')) {
+				return {
+					name: branch.slice(1).trim(),
+					isCurrent: true,
+				}
+			} else {
+				return {
+					name: branch,
+					isCurrent: false,
+				}
+			}
+		})
+}
+
+async function deleteBranch(branch) {
+	try {
+		await exec(`git branch -d ${branch}`)
+	} catch(err) {
+		if(err.message.includes('not fully merged')) {
+			throw new NotFullyMergedError(err.message)
+		} else {
+			throw err
+		}
+	}
+}
+
+async function getDefaultBranch() {
+	const remote = 'origin'
+	const allRemoteBranches = await getBranchList(remote)
+	const head = allRemoteBranches.find(x => x.name.startsWith(`${remote}/HEAD`))
+	if(head == null) {
+		// We might not have an origin. Assume master in this case
+		return 'master'
+	}
+	const [ , mainBranch ] = head.name.split('->')
+	return mainBranch.trim().slice(remote.length + 1)
+}
+
+(async () => {
+
+const localBranches = await getBranchList()
+const defaultBranch = await getDefaultBranch()
+const currentBranch = localBranches.find(x => x.isCurrent)
+const branchesToDelete = localBranches
+	.filter(x => !x.isCurrent && x.name !== defaultBranch)
+	.map(x => x.name)
+
+const result = await Promise.all(branchesToDelete.map(async (branch) => {
+	try {
+		await deleteBranch(branch)
+		return { branch, isDeleted: true }
+	} catch(err) {
+		if(err instanceof NotFullyMergedError) {
+			return {
+				branch,
+				isDeleted: false,
+				reason: 'not-merged',
+			}
+		} else {
+			return {
+				branch,
+				isDeleted: false,
+				reason: 'unknown',
+				message: err.message,
+			}
+		}
+	}
+}))
+
+console.log(`Deleted branches: ${result.filter(x => x.isDeleted).length}`)
+
+if(currentBranch != null && currentBranch.name !== defaultBranch) {
+	console.log(`Did not delete ${currentBranch.name}, because it is currently checked out`)
+}
+console.log(`Did not delete ${defaultBranch}, because it is the default branch`)
+
+const undeletedBranches = result.filter(x => !x.isDeleted)
+if(undeletedBranches.length > 0) {
+	const unmergedBranches = undeletedBranches.filter(x => x.reason === 'not-merged')
+	if(unmergedBranches.length > 0) {
+		console.log(`${unmergedBranches.length === 1 ? '1 branch' : `${unmergedBranches.length} branches`} were not deleted because they were not merged`)
+	}
+
+	const diff = undeletedBranches.length !== unmergedBranches.length
+	if(diff > 0) {
+		for(const { branch, reason, message } of undeletedBranches.filter(x => x !== 'not-merged')) {
+			console.log(`Could not delete ${branch}: ${message}`)
+		}
+	}
+}
+})().catch(error => {
+	console.error(error.stack)
+	process.exit(1)
+})
