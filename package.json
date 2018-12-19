@@ -1,21 +1,22 @@
-{ "name": "scripts"
-, "version": "0.0.0"
-, "description": "Various build scripts."
-, "main": "index.js"
-, "scripts":
-  { "test": "mocha"
-  }
-, "devDependencies":
-  { "mocha": "^1.18.2"
-  , "chai": "^1.9.1"
-  , "fzkes": "^0.14.0"
-  , "q": "^1.0.1"
-  }
-, "repository":
-  { "type": "git"
-  , "url": "git://github.com/fizker/scripts.git"
-  }
-, "author": "Benjamin Horsleben <scripts@fizkerinc.dk>"
-, "license": "WTFPL"
-, "private": true
+{
+  "name": "scripts",
+  "version": "0.0.0",
+  "description": "Various build scripts.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "devDependencies": {
+    "mocha": "^1.18.2",
+    "chai": "^1.9.1",
+    "fzkes": "^0.14.1",
+    "q": "^1.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/fizker/scripts.git"
+  },
+  "author": "Benjamin Horsleben <scripts@fizkerinc.dk>",
+  "license": "WTFPL",
+  "private": true
 }
