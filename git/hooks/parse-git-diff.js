@@ -20,6 +20,7 @@ module.exports = function(diff) {
 				removedLines: lines.filter(x => x.startsWith('-')),
 			}
 		})
+		.filter(Boolean)
 
 	return files
 }
