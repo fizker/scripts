@@ -1,5 +1,11 @@
 #!/bin/sh
 
+app=$1
+
+if [ "$app" = '' ]; then
+	app='Xcode'
+fi
+
 until [ -e ".git" ]; do
 	cd ..
 done
@@ -33,4 +39,4 @@ EOF
 git status --porcelain | \
 	grep -E ^UU | \
 	node -e "$node_script" | \
-	xargs open -a SubEthaEdit
+	xargs open -a "$app"
