@@ -1,0 +1,48 @@
+#!/bin/sh
+
+if [ "$1" == "" ]; then
+	echo 'Usage:'
+	echo '  git install-hooks <git-project> [<other project> ...]'
+	echo '  git install-hooks --init'
+	exit 1
+fi
+
+script_location=$(dirname "$0")
+
+is_init=false
+
+for var in "$@"
+do
+	if [ "$var" == "--init" ]; then
+		is_init=true
+	fi
+done
+
+if [ $is_init == "true" ]; then
+	template_location="$script_location"/git-templates
+
+	echo "$script_location"/hooks > "$template_location"/hooks/script_base
+
+	git config --global init.templateDir "$template_location"
+
+	exit 0
+fi
+
+echo 'Are you sure? This operation will override the hooks in the chosen repos'
+echo '(type yes to confirm)'
+read confirm
+
+if [ "$confirm" != "yes" ] && [ "$confirm" != "ye" ] && [ "$confirm" != "y" ]; then
+	echo 'Aborting'
+	exit 1
+fi
+
+template_location=$(git config --global init.templateDir)
+
+for var in "$@"
+do
+	target_repo="$var"/.git
+	if [ -d "$target_repo" ]; then
+		cp "$template_location"/hooks/* "$target_repo"/hooks/
+	fi
+done

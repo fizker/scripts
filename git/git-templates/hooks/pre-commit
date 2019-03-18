@@ -1,0 +1,9 @@
+#!/bin/sh
+
+set -e
+
+script_location=$(dirname "$0")
+
+base_dir=$(cat "$script_location"/script_base)
+
+"$base_dir"/pre-commit/hook "$@"
