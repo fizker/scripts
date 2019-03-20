@@ -1,10 +1,10 @@
 #!/bin/sh
+# Takes no arguments
 
 set -e
 
-real_script=$0
-real_path=$(dirname "$real_script")
+script_path=$(dirname "$0")
 
-"$real_path"/diff-check
-"$real_path"/restrict-dot-only.js
-"$real_path"/utf8-bom.js
+"$script_path"/diff-check
+"$script_path"/restrict-dot-only.js
+"$script_path"/utf8-bom.js

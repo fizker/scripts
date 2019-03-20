@@ -1,8 +1,18 @@
 #!/bin/sh
+# Two parameters
+# 1. Name of remote. If the remote is not named, this is equal to second parameter
+# 2. URL of remote.
+#
+# The standard input will contain lines in the following format
+# <local ref> <local sha1> <remote ref> <remote sha1>
+# eg: "refs/heads/master 67890 refs/heads/foreign 12345\n"
+# except the sha1 will be full 40-character SHA-1s
+#
+# If the foreign ref does not exist, the <remote sha1> will be 40 "0"s.
+# If a ref is to be deleted, the <local sha1> will be 40 "0"s.
 
 set -e
 
-real_script=$0
-real_path=$(dirname "$real_script")
+script_path=$(dirname "$0")
 
-$real_path/tmp-commits "$@"
+"$script_path"/tmp-commits "$@"

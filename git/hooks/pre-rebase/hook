@@ -1,0 +1,8 @@
+#!/bin/sh
+# Two parameters:
+# 1. The upstream
+# 2. The branch being rebased. This will not be set when rebasing the current branch
+
+set -e
+
+script_path=$(dirname "$0")

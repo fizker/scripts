@@ -1,0 +1,9 @@
+#!/bin/sh
+# Takes three parameters:
+# 1. The ref of the previous HEAD
+# 2. The ref of the new HEAD (might be unchanged)
+# 3. Flag. 0 if checking out file, 1 if changing branch
+
+set -e
+
+script_path=$(dirname "$0")

@@ -1,0 +1,9 @@
+#!/bin/sh
+#
+# 1. The command it was invoked with (`amend` or `rebase`)
+#
+# stdin contains a list of the rewritten commits in the form of `<old sha1> <new sha1>`
+
+set -e
+
+script_path=$(dirname "$0")
