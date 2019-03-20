@@ -4,6 +4,3 @@
 set -e
 
 script_path=$(dirname "$0")
-
-# Execute the pre-commit hooks to automatically get those validations
-"$script_path"/../pre-commit/hook

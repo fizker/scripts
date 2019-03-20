@@ -1,6 +1,6 @@
 #!/bin/sh
 
-hook_name=pre-commit
+hook_name=post-rewrite
 
 set -e
 
