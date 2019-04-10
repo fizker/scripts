@@ -1,0 +1,6 @@
+#!/bin/sh
+
+set -e
+
+sha=`git log -1 --format=%H`
+GIT_NO_VERIFY_SHA=$sha git rebase --continue
