@@ -106,7 +106,8 @@ const result = await Promise.all(branchesToDelete.map(async (branch) => {
 	}
 }))
 
-console.log(`Deleted branches: ${result.filter(x => x.isDeleted).length}`)
+const deletedBranches = result.filter(x => x.isDeleted).map(x => x.branch)
+console.log(`Deleted branches: ${deletedBranches.length === 0 ? 0 : `${deletedBranches.length} (${deletedBranches.join(', ')})`}`)
 
 if(currentBranch != null && currentBranch.name !== defaultBranch) {
 	console.log(`Did not delete ${currentBranch.name}, because it is currently checked out`)
