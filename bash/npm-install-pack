@@ -1,0 +1,61 @@
+#!/bin/sh
+
+# To get auto-completion working, add the following line to .bash_profile or other bash config:
+# complete -C "npm-install-pack --complete" npm-install-pack
+
+set -e
+
+move_pack() {
+	pack=$1
+	pack_name=$(node -e "
+		const pjson = require('../$pack/package.json')
+		console.log(pjson.name)
+	")
+	mkdir -p node_modules/$pack_name
+	cd node_modules/$pack_name
+	rm -rf *
+	tar -xzf ../../../../$pack/*.tgz --include package
+	mv package/* .
+	rmdir package
+}
+
+command=$1
+
+if [ "$command" == "" ]; then
+	echo 'Usage: npm-install-pack <dependency>'
+	exit
+fi
+
+# Normalize pwd to the root
+while [ "`pwd`" != '/' ]
+do
+	if [ -e "package.json" ]; then
+		break
+	else
+		cd ..
+	fi
+done
+
+if [ "$command" == "--complete" ]; then
+	current=$3
+	val=$(ls ../*/*.tgz)
+	node -e "
+		const files = \`$val\`.split(/\n/g).map(x => x.trim())
+		const names = files
+		.map(x => {
+			const match = x.match(/\\/(.+?)\\/.+?-.+?-(\\d\\.){3}tgz/)
+			if(match) {
+				return match[1]
+			}
+			return null
+		})
+		.filter(Boolean)
+		.filter((x, i, a) => a.indexOf(x) === i)
+		.filter(x => x.startsWith('$current'))
+
+		console.log(names.join('\n'))
+	"
+	exit
+fi
+
+move_pack $1
