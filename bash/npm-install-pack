@@ -43,7 +43,7 @@ if [ "$command" == "--complete" ]; then
 		const files = \`$val\`.split(/\n/g).map(x => x.trim())
 		const names = files
 		.map(x => {
-			const match = x.match(/\\/(.+?)\\/.+?-.+?-(\\d\\.){3}tgz/)
+			const match = x.match(/\\/(.+?)\\/.+?-.+?-(\\d+\\.){3}tgz/)
 			if(match) {
 				return match[1]
 			}
