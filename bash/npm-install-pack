@@ -11,10 +11,27 @@ move_pack() {
 		const pjson = require('../$pack/package.json')
 		console.log(pjson.name)
 	")
+	all_files=$(ls ../"$pack"/*.tgz)
+	tgz_name=$(node -e "
+		const files = \`$all_files\`.split(/\n/g).map(x => x.trim())
+		const names = files
+		.map(x => {
+			const match = x.match(/\\/$pack\\/(.+?-.+?-(?:\\d+\\.){3}tgz)$/)
+			if(match) {
+				return match[1]
+			}
+			return null
+		})
+		.filter(Boolean)
+		.sort()
+		.reverse()
+
+		console.log(names[0])
+	")
 	mkdir -p node_modules/$pack_name
 	cd node_modules/$pack_name
 	rm -rf *
-	tar -xzf ../../../../$pack/*.tgz --include package
+	tar -xzf ../../../../"$pack"/"$tgz_name" --include package
 	mv package/* .
 	rmdir package
 }
@@ -43,7 +60,7 @@ if [ "$command" == "--complete" ]; then
 		const files = \`$val\`.split(/\n/g).map(x => x.trim())
 		const names = files
 		.map(x => {
-			const match = x.match(/\\/(.+?)\\/.+?-.+?-(\\d\\.){3}tgz/)
+			const match = x.match(/\\/(.+?)\\/.+?-.+?-(\\d+\\.){3}tgz/)
 			if(match) {
 				return match[1]
 			}
