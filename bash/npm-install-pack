@@ -7,10 +7,6 @@ set -e
 
 move_pack() {
 	pack=$1
-	pack_name=$(node -e "
-		const pjson = require('../$pack/package.json')
-		console.log(pjson.name)
-	")
 	all_files=$(ls ../"$pack"/*.tgz)
 	tgz_name=$(node -e "
 		const files = \`$all_files\`.split(/\n/g).map(x => x.trim())
@@ -28,12 +24,8 @@ move_pack() {
 
 		console.log(names[0])
 	")
-	mkdir -p node_modules/$pack_name
-	cd node_modules/$pack_name
-	rm -rf *
-	tar -xzf ../../../../"$pack"/"$tgz_name" --include package
-	mv package/* .
-	rmdir package
+
+	npm install --no-save ../"$pack"/"$tgz_name"
 }
 
 command=$1
