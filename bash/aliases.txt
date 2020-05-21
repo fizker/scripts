@@ -1,0 +1,17 @@
+alias puptime='ps -ax -o etime,command -c'
+alias ls='ls -GFax'
+
+# Shortcuts for opening various apps
+alias term='open -a Terminal'
+alias marked='open -a Marked\ 2'
+alias chrome='open -a Google\ Chrome'
+alias canary='open -a Google\ Chrome\ Canary'
+alias brave='open -a Brave\ Browser'
+alias safari='open -a Safari'
+alias see='open -a SubEthaEdit'
+alias xcode='open -a Xcode'
+alias bbedit='open -a BBEdit'
+alias open-log='open -a Console'
+
+# Shortcut for removing file(s) from quarantine
+alias open-gate='xattr -d com.apple.quarantine'
