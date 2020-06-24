@@ -7,9 +7,9 @@
     "test": "mocha"
   },
   "devDependencies": {
-    "mocha": "^1.18.2",
-    "chai": "^1.9.1",
-    "fzkes": "^0.14.1",
+    "chai": "^4.2.0",
+    "fzkes": "^0.15.0",
+    "mocha": "^8.0.1",
     "q": "^1.0.1"
   },
   "repository": {
