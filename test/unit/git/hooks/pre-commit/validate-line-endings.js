@@ -1,3 +1,5 @@
+const helpers = require("../../../../../test-helpers")
+
 describe('unit/git/hook/pre-commit/validate-line-endings.js', function() {
 	var vm = require('vm')
 	var fs = require('fs')
@@ -7,24 +9,15 @@ describe('unit/git/hook/pre-commit/validate-line-endings.js', function() {
 	let testData
 
 	beforeEach(function() {
+		const env = helpers.createTestEnv()
+		context = env.context
+		fakeCP = env.cp
+
 		testData = {
-			fakeConsole: ['log', 'error'].reduce((o, fn) => {
-				o[fn] = fzkes.fake(fn)
-				return o
-			}, {}),
+			fakeConsole: env.console,
+			setupDiff: env.setupDiff,
+			exitPromise: env.exitPromise,
 		}
-
-		context = {
-			require: fzkes.fake(require).callsOriginal(),
-			process: { exit: fzkes.fake('process.exit') },
-			console: testData.fakeConsole,
-		}
-
-		fakeCP =
-			{ exec: fzkes.fake('exec')
-			}
-
-		context.require.withArgs('child_process').returns(fakeCP)
 	})
 	describe('When calling the script with correct newlines', function() {
 		beforeEach(() => {
@@ -39,9 +32,9 @@ describe('unit/git/hook/pre-commit/validate-line-endings.js', function() {
 			    + '+new line\r\n'
 			    + ' context after\r\n'
 
-			const promise = returnDiff(diff)
+			testData.setupDiff(diff)
 			vm.runInNewContext(source, context)
-			return promise
+			return testData.exitPromise
 		})
 		it("should not log anything", () => {
 			expect(testData.fakeConsole.log).to.not.have.been.called
@@ -64,9 +57,9 @@ describe('unit/git/hook/pre-commit/validate-line-endings.js', function() {
 			    + '+new line\n'
 			    + ' context after\n'
 
-			const promise = returnDiff(diff)
-			vm.runInNewContext(source, context, 'text-code')
-			return promise
+			testData.setupDiff(diff)
+			vm.runInNewContext(source, context)
+			return testData.exitPromise
 		})
 		it("should log error message", () => {
 			expect(testData.fakeConsole.log).to.have.been.calledWith("You have mixed line-endings. Please normalize to \\r\\n.")
@@ -89,9 +82,9 @@ describe('unit/git/hook/pre-commit/validate-line-endings.js', function() {
 			    + '+new line\r\n'
 			    + ' context after\r\n'
 
-			const promise = returnDiff(diff)
-			vm.runInNewContext(source, context, 'text-code')
-			return promise
+			testData.setupDiff(diff)
+			vm.runInNewContext(source, context)
+			return testData.exitPromise
 		})
 		it("should not log anything", () => {
 			expect(testData.fakeConsole.log).to.not.have.been.called
@@ -114,9 +107,9 @@ describe('unit/git/hook/pre-commit/validate-line-endings.js', function() {
 			    + '+\n'
 			    + ' context after\r\n'
 
-			const promise = returnDiff(diff)
-			vm.runInNewContext(source, context, 'text-code')
-			return promise
+			testData.setupDiff(diff)
+			vm.runInNewContext(source, context)
+			return testData.exitPromise
 		})
 		it("should log error message", () => {
 			expect(testData.fakeConsole.log).to.have.been.calledWith("You have mixed line-endings. Please normalize to \\r\\n.")
@@ -139,9 +132,9 @@ describe('unit/git/hook/pre-commit/validate-line-endings.js', function() {
 			    + '+\r\n'
 			    + ' context after\r\n'
 
-			const promise = returnDiff(diff)
-			vm.runInNewContext(source, context, 'text-code')
-			return promise
+			testData.setupDiff(diff)
+			vm.runInNewContext(source, context)
+			return testData.exitPromise
 		})
 		it("should not log anything", () => {
 			expect(testData.fakeConsole.log).to.not.have.been.called
@@ -151,19 +144,4 @@ describe('unit/git/hook/pre-commit/validate-line-endings.js', function() {
 			expect(context.process.exit).to.have.been.calledWith(0)
 		})
 	})
-
-	function returnDiff(diff) {
-		return new Promise((resolve, reject) => {
-			fakeCP.exec
-				.withComplexArgs({ regex: /^git rev-parse/ }).calls(function(command, cb) {
-					process.nextTick(cb)
-				})
-				.withComplexArgs({ regex: /^git diff/ }).calls(function(command, cb) {
-					process.nextTick(function() {
-						cb(null, diff)
-						resolve()
-					})
-				})
-		})
-	}
 })
