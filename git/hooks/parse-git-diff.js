@@ -4,10 +4,13 @@ module.exports = function(diff) {
 		.map(function(file) {
 			const [ lineWithName, ...lines ] = file.split(/\n/)
 
-			var name = lineWithName.trim().replace(/^a\/(.+) b\/(?:.+)$/, '<root>/$1')
+			const contentStart = lines.findIndex(x => x.startsWith("@@")) + 1
+			const metaLines = lines.splice(0, contentStart)
+
+			const name = lineWithName.trim().replace(/^a\/(.+) b\/(?:.+)$/, '<root>/$1')
 			return {
-				name: name,
-				diff: lines.join("\n"),
+				name,
+				diff: metaLines.concat(lines).join("\n"),
 				lines: lines.filter(x => !x.startsWith("new file")),
 				addedLines: lines.filter(x => x.startsWith('+')),
 				removedLines: lines.filter(x => x.startsWith('-')),

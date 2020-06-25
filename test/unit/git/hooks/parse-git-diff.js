@@ -37,21 +37,15 @@ describe("unit/git/hook/parse-git-diff.js", () => {
 					\\ No newline at end of file
 					`,
 					lines: [
-						"index 0000000..eb59b4c",
-						"--- /dev/null",
-						"+++ b/test/unit/git/hooks/parse-git-diff.js",
-						"@@ -0,0 +1,20 @@",
 						"+first line",
 						"+second line",
 						"\\ No newline at end of file",
 					],
 					addedLines: [
-						"+++ b/test/unit/git/hooks/parse-git-diff.js",
 						"+first line",
 						"+second line",
 					],
 					removedLines: [
-						"--- /dev/null",
 					],
 				},
 			],
@@ -79,18 +73,11 @@ describe("unit/git/hook/parse-git-diff.js", () => {
 					-node_modules
 					`,
 					lines: [
-						"deleted file mode 100644",
-						"index 3c3629e..0000000",
-						"--- a/.gitignore",
-						"+++ /dev/null",
-						"@@ -1 +0,0 @@",
 						"-node_modules",
 					],
 					addedLines: [
-						"+++ /dev/null",
 					],
 					removedLines: [
-						"--- a/.gitignore",
 						"-node_modules",
 					],
 				},
@@ -129,10 +116,6 @@ describe("unit/git/hook/parse-git-diff.js", () => {
 					 			console.log(\`\${file.name} contains the UTF8 BOM. Please remove it\`)
 					`,
 					lines: [
-						"index 14e36e5..3ffc50c 100755",
-						"--- a/git/hooks/pre-commit/utf8-bom.js",
-						"+++ b/git/hooks/pre-commit/utf8-bom.js",
-						"@@ -10,7 +10,7 @@ cp.exec('git diff --cached --no-color', function(err, diff) {",
 						" 	const files = parseDiff(diff)",
 						" 	const filesWithBOM = files.filter(x => x.addedLines.some(x => x.includes(utf8bom)))",
 						"-",
@@ -142,11 +125,9 @@ describe("unit/git/hook/parse-git-diff.js", () => {
 						" 			console.log(\`\${file.name} contains the UTF8 BOM. Please remove it\`)",
 					],
 					addedLines: [
-						"+++ b/git/hooks/pre-commit/utf8-bom.js",
 						"+process.exit(1)",
 					],
 					removedLines: [
-						"--- a/git/hooks/pre-commit/utf8-bom.js",
 						"-",
 					],
 				},
