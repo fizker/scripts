@@ -1,21 +1,14 @@
 module.exports = function(diff) {
-	var files = diff.split(/diff --git.*?\n/)
+	var files = diff.split(/diff --git/)
 		.slice(1)
 		.map(function(file) {
-			var lines = file.split(/\n/)
+			const [ lineWithName, ...lines ] = file.split(/\n/)
 
-			if(lines.length > 0 && lines[0].startsWith('new file')) {
-				lines = lines.slice(1)
-			}
-			if(lines.length < 3) {
-				return null
-			}
-
-			var name = lines[2].replace(/\+\+\+ .\/(.+)/, '<root>/$1')
+			var name = lineWithName.trim().replace(/^a\/(.+) b\/(?:.+)$/, '<root>/$1')
 			return {
 				name: name,
-				diff: file,
-				lines: lines,
+				diff: lines.join("\n"),
+				lines: lines.filter(x => !x.startsWith("new file")),
 				addedLines: lines.filter(x => x.startsWith('+')),
 				removedLines: lines.filter(x => x.startsWith('-')),
 			}
