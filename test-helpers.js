@@ -1,3 +1,4 @@
+const path = require("path")
 const fzkes = require("fzkes")
 
 module.exports = {
@@ -5,9 +6,9 @@ module.exports = {
 	setupDiff,
 }
 
-function createTestEnv() {
+function createTestEnv(fileUnderTest) {
 	const console = createConsole()
-	const context = createContext(console)
+	const context = createContext(console, fileUnderTest)
 	const cp = createChildProcess(context)
 
 	const exitPromise = new Promise((resolve, reject) => {
@@ -29,9 +30,15 @@ function createConsole() {
 		return o
 	}, {})
 }
-function createContext(console) {
+function createContext(console, fileUnderTest) {
+	const pathToFile = path.dirname(fileUnderTest)
 	return {
-		require: fzkes.fake(require).callsOriginal(),
+		require: fzkes.fake(require).calls((modulePath) => {
+			if(modulePath[0] === ".") {
+				modulePath = path.join(pathToFile, modulePath)
+			}
+			return require(modulePath)
+		}),
 		process: { exit: fzkes.fake("process.exit") },
 		console,
 	}

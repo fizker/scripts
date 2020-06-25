@@ -1,15 +1,18 @@
+const vm = require('vm')
+const fs = require('fs')
+
 const helpers = require("../../../../../test-helpers")
 
+const fileUnderTest = __filename.replace('/test/unit', '')
+const source = fs.readFileSync(fileUnderTest, 'utf8')
+
 describe('unit/git/hook/pre-commit/validate-line-endings.js', function() {
-	var vm = require('vm')
-	var fs = require('fs')
-	var source = fs.readFileSync(__filename.replace('/test/unit', ''), 'utf8')
 	var fakeCP
 	var context
 	let testData
 
 	beforeEach(function() {
-		const env = helpers.createTestEnv()
+		const env = helpers.createTestEnv(fileUnderTest)
 		context = env.context
 		fakeCP = env.cp
 
