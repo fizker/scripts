@@ -1,8 +1,8 @@
 module.exports = function(diff) {
-	var files = diff.split(/diff --git/)
+	const files = diff.split(/diff --git/)
 		.slice(1)
 		.map(function(file) {
-			const [ lineWithName, ...lines ] = file.split(/\n/)
+			const [ lineWithName, ...lines ] = file.trim().split(/\n/)
 
 			const contentStart = lines.findIndex(x => x.startsWith("@@")) + 1
 			const metaLines = lines.splice(0, contentStart)
