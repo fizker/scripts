@@ -7,7 +7,7 @@ module.exports = function(diff) {
 			const contentStart = lines.findIndex(x => x.startsWith("@@"))
 			const metaLines = lines.splice(0, contentStart)
 
-			const name = lineWithName.trim().replace(/^a\/(.+) b\/(?:.+)$/, '<root>/$1')
+			const name = lineWithName.trim().replace(/^a\/(?:.+) b\/(.+)$/, '<root>/$1')
 			return {
 				name,
 				diff: metaLines.concat(lines).join("\n"),
