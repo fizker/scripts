@@ -1,7 +1,18 @@
 #!/bin/sh
 
-defaults write com.apple.screencapture disable-shadow -bool true
+# see more at https://github.com/mathiasbynens/dotfiles/blob/main/.macos
 
+defaults write com.apple.screencapture disable-shadow -bool true
+defaults write com.apple.dock minimize-to-application -bool true
+defaults write com.apple.messageshelper.MessageController SOInputLineSettings -dict-add "automaticEmojiSubstitutionEnablediMessage" -bool false
+defaults write com.apple.Finder NSToolbarTitleViewRolloverDelay -float 0
 
 # Rebooting stuff to pick up new defaults
-killall SystemUIServer
+for app in \
+	"Dock" \
+	"Finder" \
+	"Messages" \
+	"SystemUIServer" \
+;do
+	killall "$app"
+done
