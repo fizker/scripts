@@ -6,6 +6,9 @@ zsh
 Paste the following into `~/.zshrc`:
 
 ```
+# Change tab size from 8 to 4
+tabs -4
+
 # Make the various word-movements respect / as a word separator (zsh is useless in the default behaviour)
 WORDCHARS=`echo $WORDCHARS | sed s-/--g | sed s/-//g`
 
