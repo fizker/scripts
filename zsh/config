@@ -1,0 +1,11 @@
+# Change tab size from 8 to 4
+tabs -4
+
+# Make the various word-movements respect / as a word separator (zsh is useless in the default behaviour)
+WORDCHARS=`echo $WORDCHARS | sed s-/--g | sed s/-//g`
+
+# Disable the windows-like behaviour where tabbing multiple times start cycling all available completions
+setopt noautomenu
+
+# Change prompt to the default from bash: '<machine name>:<current folder> <user>$ '
+PROMPT='%m:%1~ %n$ '

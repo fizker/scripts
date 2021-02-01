@@ -1,0 +1,10 @@
+# Update completions to include the custom git commands
+zstyle ':completion:*:*:git:*' user-commands \
+	clean-local-branches:'removes local branches that are merged with HEAD' \
+	rebase-continue-no-verify:'--no-verify for rebase --continue'
+
+mkdir -p ~/.completions
+
+# Generate and include Swift completions
+swift package completion-tool generate-zsh-script > ~/.completions/_swift
+source ~/.completions/_swift

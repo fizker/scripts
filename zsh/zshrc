@@ -1,0 +1,2 @@
+source $FZK_SCRIPT_FOLDER/config
+source $FZK_SCRIPT_FOLDER/completions
