@@ -3,4 +3,12 @@
 
 set -e
 
+if [ "$GIT_NO_VERIFY_SHA" != '' ] && [ $GIT_NO_VERIFY_SHA == $(git log -1 --format=%H) ];
+then
+	exit 0
+fi
+
 script_path=$(dirname "$0")
+
+# Execute the pre-commit hooks to automatically get those validations
+"$script_path"/../pre-commit/hook "$@"

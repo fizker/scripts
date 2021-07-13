@@ -1,0 +1,13 @@
+#!/bin/sh
+
+script_location=$(dirname "$0")
+hook_name=$(basename "$1")
+
+set -e
+
+hook_path="$script_location"/"$hook_name"/hook
+
+if [ -e "$hook_path" ];
+then
+	"$hook_path" "${@:2}"
+fi
