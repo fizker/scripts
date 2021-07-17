@@ -19,30 +19,23 @@ do
 done
 
 if [ $is_init == "true" ]; then
-	template_location="$script_location"/git-templates
+	hooks_location="$script_location"/git-templates/hooks
 
-	echo "$script_location"/hooks > "$template_location"/hooks/script_base
-
-	git config --global init.templateDir "$template_location"
+	git config --global core.hooksPath "$hooks_location"
 
 	exit 0
 fi
 
-echo 'Are you sure? This operation will override the hooks in the chosen repos'
-echo '(type yes to confirm)'
-read confirm
-
-if [ "$confirm" != "yes" ] && [ "$confirm" != "ye" ] && [ "$confirm" != "y" ]; then
-	echo 'Aborting'
-	exit 1
-fi
-
-template_location=$(git config --global init.templateDir)
-
-for var in "$@"
+for target_repo in "$@"
 do
-	target_repo="$var"/.git
-	if [ -d "$target_repo" ]; then
-		cp "$template_location"/hooks/* "$target_repo"/hooks/
+	pushd "$target_repo"
+
+	hooks_path=$(git config core.hooksPath)
+	if [ "$hooks_path" != "" ];
+	then
+		git config --add fizker.hooksPath "$hooks_path"
+		git config --unset core.hooksPath
 	fi
+
+	popd
 done

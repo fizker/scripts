@@ -25,10 +25,23 @@ then
 fi
 
 ( IFS=:
-	for path in $(git config fizker.hooksPaths); do
-		if [ -e "$path"/"$hook_name" ];
-		then
-			"$path"/"$hook_name"
-		fi
-	done
+	set +e
+	all_paths=$(git config --get-all fizker.hooksPath)
+	has_paths=$?
+	set -e
+
+	if [ $? == 0 ]; then
+		all_paths_normalized=$(node -e "
+			const org = \`$all_paths\`
+			const p = org.replace(/\r?\n/g, ':')
+			console.log(p)
+		")
+
+		for path in $all_paths_normalized; do
+			if [ -e "$path"/"$hook_name" ];
+			then
+				"$path"/"$hook_name"
+			fi
+		done
+	fi
 )
