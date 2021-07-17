@@ -18,24 +18,24 @@ do
 	fi
 done
 
-if [ $is_init == "true" ]; then
-	hooks_location="$script_location"/git-templates/hooks
+hooks_path="$script_location"/git-templates/hooks
 
-	git config --global core.hooksPath "$hooks_location"
+if [ $is_init == "true" ]; then
+	git config --global core.hooksPath "$hooks_path"
 
 	exit 0
 fi
 
 for target_repo in "$@"
 do
-	pushd "$target_repo"
+	pushd "$target_repo" &> /dev/null
 
-	hooks_path=$(git config core.hooksPath)
-	if [ "$hooks_path" != "" ];
+	existing_hooks_path=$(git config core.hooksPath)
+	if [ "$existing_hooks_path" != "" ] && [ "$existing_hooks_path" != "$hooks_path" ];
 	then
-		git config --add fizker.hooksPath "$hooks_path"
+		git config --add fizker.hooksPath "$existing_hooks_path"
 		git config --unset core.hooksPath
 	fi
 
-	popd
+	popd &> /dev/null
 done
