@@ -11,3 +11,24 @@ if [ -e "$hook_path" ];
 then
 	"$hook_path" "${@:2}"
 fi
+
+git_root=$(git rev-parse --show-toplevel)
+
+if [ -e "$git_root"/.git/hooks/"$hook_name" ];
+then
+	"$git_root"/.git/hooks/"$hook_name"
+fi
+
+if [ -e "$git_root"/.git/hooks/"$hook_name".local ];
+then
+	"$git_root"/.git/hooks/"$hook_name".local
+fi
+
+( IFS=:
+	for path in $(git config fizker.hooksPaths); do
+		if [ -e "$path"/"$hook_name" ];
+		then
+			"$path"/"$hook_name"
+		fi
+	done
+)
