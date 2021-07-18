@@ -66,7 +66,14 @@ do
 	existing_hooks_path=$(git config core.hooksPath)
 	if [ "$existing_hooks_path" != "" ] && [ "$existing_hooks_path" != "$hooks_path" ];
 	then
-		git config --add fizker.hooksPath "$existing_hooks_path"
+		set +e
+		_=$(git config --get fizker.hooksPath "^$existing_hooks_path$")
+		has_registered_hook=$?
+		set -e
+
+		if [ $has_registered_hook != 0 ]; then
+			git config --add fizker.hooksPath "$existing_hooks_path"
+		fi
 		git config --unset core.hooksPath
 	fi
 
