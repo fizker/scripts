@@ -5,6 +5,8 @@ hook_name=$(basename "$1")
 
 set -e
 
+"$script_location"/check-old-style-setup execute-hook
+
 hook_path="$script_location"/"$hook_name"/hook
 
 if [ -e "$hook_path" ];

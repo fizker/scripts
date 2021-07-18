@@ -1,0 +1,30 @@
+#!/bin/sh
+
+skip_detection=$(git config fizker.skipOldStyleDetection)
+
+if [ "$skip_detection" == "true" ];
+then
+	exit 0
+fi
+
+if [ "$1" == "execute-hook" ];
+then
+	git_dir=$(git rev-parse --git-dir)
+	hooks_path="$git_dir"/hooks
+	if [ -e "$git_dir/hooks/script_base" ];
+	then
+		echo 'Old-style hooks detected. Please delete them all to avoid running the hooks multiple times.'
+		echo 'If this is a false positive, run `git config fizker.skipOldStyleDetection true`.'
+		exit 1
+	fi
+
+	exit 0
+fi
+
+global_hooks_path=$(git config --global core.hooksPath)
+
+if [ "$global_hooks_path" == "" ];
+then
+	echo 'Old-style hooks detect. Please run `git install-hooks --init` and clear out the contents of the hooks folder.'
+	exit 1
+fi

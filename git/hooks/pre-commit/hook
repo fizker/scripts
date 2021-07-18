@@ -5,6 +5,8 @@ set -e
 
 script_path=$(dirname "$0")
 
+"$script_path"/../check-old-style-setup
+
 "$script_path"/diff-check
 "$script_path"/restrict-dot-only.js
 "$script_path"/utf8-bom.js

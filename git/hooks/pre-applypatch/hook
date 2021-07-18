@@ -10,5 +10,7 @@ fi
 
 script_path=$(dirname "$0")
 
+"$script_path"/../check-old-style-setup
+
 # Execute the pre-commit hooks to automatically get those validations
 "$script_path"/../pre-commit/hook "$@"
