@@ -4,17 +4,22 @@ if [ "$1" == "" ]; then
 	echo 'Usage:'
 	echo '  git install-hooks <git-project> [<other project> ...]'
 	echo '  git install-hooks --init'
+	echo '  git install-hooks --status'
 	exit 1
 fi
 
 script_location=$(dirname "$0")
 
 is_init=false
+is_status=false
 
 for var in "$@"
 do
 	if [ "$var" == "--init" ]; then
 		is_init=true
+	fi
+	if [ "$var" == "--status" ]; then
+		is_status=true
 	fi
 done
 
@@ -23,6 +28,34 @@ hooks_path="$script_location"/git-templates/hooks
 if [ $is_init == "true" ]; then
 	git config --global core.hooksPath "$hooks_path"
 
+	exit 0
+fi
+
+if [ $is_status == "true" ]; then
+	current_global=$(git config --global core.hooksPath)
+	if [ "$current_global" == "$hooks_path" ]; then
+		echo "Global hook installed."
+	else
+		echo "Global hook is not installed."
+	fi
+
+	current_local=$(git config core.hooksPath)
+	if [ "$current_local" != "$current_global" ]; then
+		echo "Local hooksPath has overridden global hook."
+		echo "Local hooksPath: $current_local"
+	fi
+
+	echo
+
+	additional_hooks=$(git config --get-all fizker.hooksPath)
+	if [ "$additional_hooks" == "" ]; then
+		echo "No additional hooks"
+	else
+		echo "Additional hooks:"
+		node -e "
+			console.log(process.argv[1].split(/\n/g).map(x => '- ' + x).join('\n'))
+		" "$additional_hooks"
+	fi
 	exit 0
 fi
 
