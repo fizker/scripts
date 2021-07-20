@@ -1,21 +1,17 @@
 module.exports = function(diff) {
-	var files = diff.split(/diff --git.*?\n/)
+	const files = diff.split(/^diff --git/m)
 		.slice(1)
 		.map(function(file) {
-			var lines = file.split(/\n/)
+			const [ lineWithName, ...lines ] = file.trim().split(/\n/)
 
-			if(lines.length > 0 && lines[0].startsWith('new file')) {
-				lines = lines.slice(1)
-			}
-			if(lines.length < 3) {
-				return null
-			}
+			const contentStart = lines.findIndex(x => x.startsWith("@@"))
+			const metaLines = lines.splice(0, contentStart)
 
-			var name = lines[2].replace(/\+\+\+ .\/(.+)/, '<root>/$1')
+			const name = lineWithName.trim().replace(/^a\/(?:.+) b\/(.+)$/, '<root>/$1')
 			return {
-				name: name,
-				diff: file,
-				lines: lines,
+				name,
+				diff: metaLines.concat(lines).join("\n"),
+				lines: lines.filter(x => !x.startsWith("new file")),
 				addedLines: lines.filter(x => x.startsWith('+')),
 				removedLines: lines.filter(x => x.startsWith('-')),
 			}
