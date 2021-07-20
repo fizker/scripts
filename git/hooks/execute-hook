@@ -18,15 +18,15 @@ git_root=$(git rev-parse --show-toplevel)
 
 if [ -e "$git_root"/.git/hooks/"$hook_name" ];
 then
-	"$git_root"/.git/hooks/"$hook_name"
+	"$git_root"/.git/hooks/"$hook_name" "${@:2}"
 fi
 
 if [ -e "$git_root"/.git/hooks/"$hook_name".local ];
 then
-	"$git_root"/.git/hooks/"$hook_name".local
+	"$git_root"/.git/hooks/"$hook_name".local "${@:2}"
 fi
 
-( IFS=:
+(
 	set +e
 	all_paths=$(git config --get-all fizker.hooksPath)
 	has_paths=$?
@@ -39,10 +39,14 @@ fi
 			console.log(p)
 		")
 
+		org_IFS=$IFS
+		IFS=:
 		for path in $all_paths_normalized; do
 			if [ -e "$path"/"$hook_name" ];
 			then
-				"$path"/"$hook_name"
+				IFS=$org_IFS
+				"$path"/"$hook_name" "${@:2}"
+				IFS=:
 			fi
 		done
 	fi
