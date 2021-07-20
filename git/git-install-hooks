@@ -4,45 +4,78 @@ if [ "$1" == "" ]; then
 	echo 'Usage:'
 	echo '  git install-hooks <git-project> [<other project> ...]'
 	echo '  git install-hooks --init'
+	echo '  git install-hooks --status'
 	exit 1
 fi
 
 script_location=$(dirname "$0")
 
 is_init=false
+is_status=false
 
 for var in "$@"
 do
 	if [ "$var" == "--init" ]; then
 		is_init=true
 	fi
+	if [ "$var" == "--status" ]; then
+		is_status=true
+	fi
 done
 
+hooks_path="$script_location"/git-templates/hooks
+
 if [ $is_init == "true" ]; then
-	template_location="$script_location"/git-templates
-
-	echo "$script_location"/hooks > "$template_location"/hooks/script_base
-
-	git config --global init.templateDir "$template_location"
+	git config --global core.hooksPath "$hooks_path"
 
 	exit 0
 fi
 
-echo 'Are you sure? This operation will override the hooks in the chosen repos'
-echo '(type yes to confirm)'
-read confirm
+if [ $is_status == "true" ]; then
+	current_global=$(git config --global core.hooksPath)
+	if [ "$current_global" == "$hooks_path" ]; then
+		echo "Global hook installed."
+	else
+		echo "Global hook is not installed."
+	fi
 
-if [ "$confirm" != "yes" ] && [ "$confirm" != "ye" ] && [ "$confirm" != "y" ]; then
-	echo 'Aborting'
-	exit 1
+	current_local=$(git config core.hooksPath)
+	if [ "$current_local" != "$current_global" ]; then
+		echo "Local hooksPath has overridden global hook."
+		echo "Local hooksPath: $current_local"
+	fi
+
+	echo
+
+	additional_hooks=$(git config --get-all fizker.hooksPath)
+	if [ "$additional_hooks" == "" ]; then
+		echo "No additional hooks"
+	else
+		echo "Additional hooks:"
+		node -e "
+			console.log(process.argv[1].split(/\n/g).map(x => '- ' + x).join('\n'))
+		" "$additional_hooks"
+	fi
+	exit 0
 fi
 
-template_location=$(git config --global init.templateDir)
-
-for var in "$@"
+for target_repo in "$@"
 do
-	target_repo="$var"/.git
-	if [ -d "$target_repo" ]; then
-		cp "$template_location"/hooks/* "$target_repo"/hooks/
+	pushd "$target_repo" &> /dev/null
+
+	existing_hooks_path=$(git config core.hooksPath)
+	if [ "$existing_hooks_path" != "" ] && [ "$existing_hooks_path" != "$hooks_path" ];
+	then
+		set +e
+		_=$(git config --get fizker.hooksPath "^$existing_hooks_path$")
+		has_registered_hook=$?
+		set -e
+
+		if [ $has_registered_hook != 0 ]; then
+			git config --add fizker.hooksPath "$existing_hooks_path"
+		fi
+		git config --unset core.hooksPath
 	fi
+
+	popd &> /dev/null
 done

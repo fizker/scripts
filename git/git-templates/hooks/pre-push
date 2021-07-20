@@ -1,15 +1,8 @@
 #!/bin/sh
 
-hook_name=pre-push
-
 set -e
 
+hook_name=$(basename "$0")
 script_location=$(dirname "$0")
 
-base_dir=$(cat "$script_location"/script_base)
-
-"$base_dir"/$hook_name/hook "$@"
-
-if [ -e "$script_location"/$hook_name.local ]; then
-	"$script_location"/$hook_name.local "$@"
-fi
+"$script_location"/../../hooks/execute-hook $hook_name "$@"

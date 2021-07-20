@@ -1,23 +1,8 @@
 #!/bin/sh
 
-hook_name=pre-applypatch
-
 set -e
 
-if [ "$GIT_NO_VERIFY_SHA" != '' ] && [ $GIT_NO_VERIFY_SHA == $(git log -1 --format=%H) ];
-then
-	exit 0
-fi
-
+hook_name=$(basename "$0")
 script_location=$(dirname "$0")
 
-base_dir=$(cat "$script_location"/script_base)
-
-"$base_dir"/$hook_name/hook "$@"
-
-if [ -e "$script_location"/$hook_name.local ]; then
-	"$script_location"/$hook_name.local "$@"
-fi
-
-# Execute the pre-commit hooks to automatically get those validations
-"$script_location"/pre-commit "$@"
+"$script_location"/../../hooks/execute-hook $hook_name "$@"

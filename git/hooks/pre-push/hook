@@ -15,4 +15,6 @@ set -e
 
 script_path=$(dirname "$0")
 
+"$script_path"/../check-old-style-setup
+
 "$script_path"/tmp-commits "$@"

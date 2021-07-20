@@ -1,0 +1,53 @@
+#!/bin/sh
+
+script_location=$(dirname "$0")
+hook_name=$(basename "$1")
+
+set -e
+
+"$script_location"/check-old-style-setup execute-hook
+
+hook_path="$script_location"/"$hook_name"/hook
+
+if [ -e "$hook_path" ];
+then
+	"$hook_path" "${@:2}"
+fi
+
+git_root=$(git rev-parse --show-toplevel)
+
+if [ -e "$git_root"/.git/hooks/"$hook_name" ];
+then
+	"$git_root"/.git/hooks/"$hook_name" "${@:2}"
+fi
+
+if [ -e "$git_root"/.git/hooks/"$hook_name".local ];
+then
+	"$git_root"/.git/hooks/"$hook_name".local "${@:2}"
+fi
+
+(
+	set +e
+	all_paths=$(git config --get-all fizker.hooksPath)
+	has_paths=$?
+	set -e
+
+	if [ $? == 0 ]; then
+		all_paths_normalized=$(node -e "
+			const org = \`$all_paths\`
+			const p = org.replace(/\r?\n/g, ':')
+			console.log(p)
+		")
+
+		org_IFS=$IFS
+		IFS=:
+		for path in $all_paths_normalized; do
+			if [ -e "$path"/"$hook_name" ];
+			then
+				IFS=$org_IFS
+				"$path"/"$hook_name" "${@:2}"
+				IFS=:
+			fi
+		done
+	fi
+)
