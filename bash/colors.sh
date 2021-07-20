@@ -1,0 +1,12 @@
+# Ansi color code variables
+red="\033[0;91m"
+blue="\033[0;94m"
+expand_bg="\033[K"
+blue_bg="\033[0;104m${expand_bg}"
+red_bg="\033[0;101m${expand_bg}"
+green_bg="\033[0;102m${expand_bg}"
+green="\033[0;92m"
+white="\033[0;97m"
+bold="\033[1m"
+uline="\033[4m"
+reset="\033[0m"

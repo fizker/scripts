@@ -1,5 +1,8 @@
 #!/bin/sh
 
+script_location=$(dirname "$0")
+source "$script_location"/../../bash/colors.sh
+
 skip_detection=$(git config fizker.skipOldStyleDetection)
 
 if [ "$skip_detection" == "true" ];
@@ -13,8 +16,8 @@ then
 	hooks_path="$git_dir"/hooks
 	if [ -e "$git_dir/hooks/script_base" ];
 	then
-		echo 'Old-style hooks detected. Please delete them all to avoid running the hooks multiple times.'
-		echo 'If this is a false positive, run `git config fizker.skipOldStyleDetection true`.'
+		echo "${red}Old-style hooks detected. Please delete them all to avoid running the hooks multiple times."
+		echo 'If this is a false positive, run `git config fizker.skipOldStyleDetection true`.'${reset}
 		exit 1
 	fi
 
@@ -25,6 +28,6 @@ global_hooks_path=$(git config --global core.hooksPath)
 
 if [ "$global_hooks_path" == "" ];
 then
-	echo 'Old-style hooks detect. Please run `git install-hooks --init` and clear out the contents of the hooks folder.'
+	echo ${red}'Old-style hooks detect. Please run `git install-hooks --init` and clear out the contents of the hooks folder.'${reset}
 	exit 1
 fi
