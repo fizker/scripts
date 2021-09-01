@@ -1,2 +1,3 @@
 source $FZK_SCRIPT_FOLDER/config
 source $FZK_SCRIPT_FOLDER/completions
+$FZK_SCRIPT_FOLDER/../macos/test-sudo-touch-id
