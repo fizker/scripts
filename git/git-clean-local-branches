@@ -2,6 +2,11 @@
 
 const child_process = require('child_process')
 
+const findSpacesRegex = /\s+/
+function findStartingSpaceCount(str) {
+	return str.match(findSpacesRegex)?.[0]?.length ?? 0
+}
+
 class ExecError extends Error {
 	constructor(err, stdout, stderr) {
 		super(stderr)
@@ -68,11 +73,59 @@ async function getDefaultBranch() {
 	const allRemoteBranches = await getBranchList(remote)
 	const head = allRemoteBranches.find(x => x.name.startsWith(`${remote}/HEAD`))
 	if(head == null) {
-		// We might not have an origin. Assume master in this case
-		return 'master'
+		const remoteInfo = await getRemoteBranches(remote)
+		// We might not have an origin. Assume main in this case
+		return remoteInfo?.default ?? "main"
 	}
 	const [ , mainBranch ] = head.name.split('->')
 	return mainBranch.trim().slice(remote.length + 1)
+}
+
+async function getRemotes() {
+	const command = "git remote"
+	const { stdout } = await exec(command)
+	return stdout
+		.split("\n")
+		.filter(Boolean)
+}
+
+async function getRemoteBranches(remote) {
+	const availableRemotes = await getRemotes()
+	if(!availableRemotes.includes(remote)) {
+		return null
+	}
+
+	const command = `git remote show ${remote}`
+	const { stdout } = await exec(command)
+
+	const lines = stdout.split("\n")
+	const head = lines
+		.find(x => x.includes("HEAD branch:"))
+		?.replace("HEAD branch:", "")
+		?.trim()
+
+	const remoteBranchStartIdx = lines.findIndex(x => x.includes("Remote branch:"))
+	const remoteBranchStart = lines[remoteBranchStartIdx]
+	const indentation = findStartingSpaceCount(remoteBranchStart)
+	const remoteBranchEndIdx = lines.findIndex((x, idx) => {
+		if(idx <= remoteBranchStartIdx) {
+			return false
+		}
+		const spaces = findStartingSpaceCount(x)
+		return spaces === indentation
+	})
+
+	const branchesRaw = lines.filter((x, idx) => remoteBranchStartIdx + 1 <= idx && idx < remoteBranchEndIdx)
+	const branches = branchesRaw
+		.map(x => {
+			const [name, state] = x.trim().split(" ")
+			return { name, state }
+		})
+
+	return {
+		default: head,
+		branches,
+	}
 }
 
 (async () => {
