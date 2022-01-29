@@ -9,3 +9,6 @@ setopt noautomenu
 
 # Change prompt to the default from bash: '<machine name>:<current folder> <user>$ '
 PROMPT='%m:%1~ %n$ '
+
+# remove the confirmation when asking to `rm *`
+setopt rmstarsilent
