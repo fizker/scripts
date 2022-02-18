@@ -1,6 +1,7 @@
 # Update completions to include the custom git commands
 zstyle ':completion:*:*:git:*' user-commands \
 	clean-local-branches:'removes local branches that are merged with HEAD' \
+	default-branch:'returns the default branch or main if there is no remote' \
 	rebase-continue-no-verify:'--no-verify for rebase --continue'
 
 mkdir -p ~/.completions

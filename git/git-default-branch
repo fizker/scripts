@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+
+import("./source/helpers.mjs")
+.then(({ getDefaultBranch }) => getDefaultBranch())
+.then(branch => {
+	console.log(branch)
+})
+.catch(e => {
+	console.error(e.message)
+	process.exit(1)
+})
