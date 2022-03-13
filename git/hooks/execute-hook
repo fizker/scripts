@@ -3,6 +3,12 @@
 script_location=$(dirname "$0")
 hook_name=$(basename "$1")
 
+if ! hash node 2> /dev/null
+then
+	echo "Node not found, skipping $hook_name hook"
+	exit 0
+fi
+
 set -e
 
 "$script_location"/check-old-style-setup execute-hook
