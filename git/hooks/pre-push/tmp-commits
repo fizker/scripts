@@ -25,7 +25,8 @@ url="$2"
 assert_faulty_commit() {
 	sha=$1
 
-	result=`git merge-base --is-ancestor $sha $remote/HEAD`
+	default_branch=`git default-branch`
+	result=`git merge-base --is-ancestor $sha $default_branch`
 
 	if [ $? -ne 0 ]; then
 		git log -1 $sha
