@@ -1,17 +1,19 @@
 #!/bin/sh
 
-if [ "$1" == "" ]; then
+print_usage() {
 	echo 'Usage:'
+	echo '  git install-hooks [--status]'
+	echo '  git install-hooks --help'
 	echo '  git install-hooks <git-project> [<other project> ...]'
 	echo '  git install-hooks --init'
-	echo '  git install-hooks --status'
 	exit 1
-fi
+}
 
 script_location=$(dirname "$0")
 
 is_init=false
 is_status=false
+is_help=false
 
 for var in "$@"
 do
@@ -21,15 +23,20 @@ do
 	if [ "$var" == "--status" ]; then
 		is_status=true
 	fi
+	if [ "$var" == "--help" ]; then
+		is_help=true
+	fi
 done
 
-hooks_path="$script_location"/git-templates/hooks
-
-if [ $is_init == "true" ]; then
-	git config --global core.hooksPath "$hooks_path"
-
-	exit 0
+if [ "$1" == "" ]; then
+	is_status=true
 fi
+
+if [ $is_help == "true" ]; then
+	print_usage
+fi
+
+hooks_path="$script_location"/git-templates/hooks
 
 if [ $is_status == "true" ]; then
 	current_global=$(git config --global core.hooksPath)
@@ -56,6 +63,12 @@ if [ $is_status == "true" ]; then
 			console.log(process.argv[1].split(/\n/g).map(x => '- ' + x).join('\n'))
 		" "$additional_hooks"
 	fi
+	exit 0
+fi
+
+if [ $is_init == "true" ]; then
+	git config --global core.hooksPath "$hooks_path"
+
 	exit 0
 fi
 
