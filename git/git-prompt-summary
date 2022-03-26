@@ -1,5 +1,29 @@
 #!/bin/sh
 
+is_dirty() {
+	status=`git status --short --porcelain`
+	node -e '
+		const statusLines = (process.argv[1] ?? "")
+			.split("\n")
+			.map(x => x.trim())
+			.filter(Boolean)
+
+		loop: for(const line of statusLines) {
+			switch(line[0]) {
+				case "M":
+				case "A":
+					console.log("true")
+					break loop
+				case "?":
+					continue loop
+				default:
+					console.log(line)
+					continue loop
+			}
+		}
+	' "$status"
+}
+
 # Normalize pwd to the root
 while [ "`pwd`" != '/' ]
 do
@@ -16,5 +40,10 @@ if [ ! -e ".git" ]; then
 fi
 
 branch=`git branch --show-current`
+if [ `is_dirty` ]; then
+	dirty_color=red
+else
+	dirty_color=green
+fi
 
-/bin/echo -n ' ['$branch']'
+/bin/echo -n ' [%F{'$dirty_color'}'$branch'%f]'
