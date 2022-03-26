@@ -2,8 +2,9 @@
 set -o PROMPT_SUBST
 
 precmd() {
+	vcs_info_msg_pwd_=`git-relative-pwd dirname`
 	vcs_info_msg_0_=`git-prompt-summary`
 }
 
 # Change prompt to the default from bash: '<machine name>:<current folder> <user>$ '
-PS1='%m:%1~$vcs_info_msg_0_ %n$ '
+PS1='%m:$vcs_info_msg_pwd_$vcs_info_msg_0_ %n$ '

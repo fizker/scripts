@@ -27,15 +27,14 @@ is_dirty() {
 # Normalize pwd to the root
 while [ "`pwd`" != '/' ]
 do
-	if [ -e ".git" ]; then
+	if [ -e '.git' ]; then
 		break
 	else
 		cd ..
 	fi
 done
 
-if [ ! -e ".git" ]; then
-	/bin/echo -n ''
+if [ ! -e '.git' ]; then
 	exit 0
 fi
 

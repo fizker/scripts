@@ -1,0 +1,43 @@
+#!/bin/sh
+
+current_pwd=`pwd`
+default=$1
+
+relative_pwd=''
+# Normalize pwd to the root
+while [ "`pwd`" != '/' ]
+do
+	if [ -e '.git' ]; then
+		break
+	else
+		cd ..
+	fi
+done
+
+if [ ! -e '.git' ]; then
+	node -e "
+		const path = require('path')
+		switch('$default') {
+		case '':
+		case 'none':
+			break
+		case 'dirname':
+			console.log(path.basename('$current_pwd'))
+			break
+		case 'full':
+			console.log('$current_pwd')
+			break
+		}
+	"
+	exit 0
+fi
+
+node -e "
+	const path = require('path')
+	let p = path.basename('`pwd`')
+	const rel = path.relative('`pwd`', '$current_pwd')
+	if(rel) {
+		p += '/' + rel
+	}
+	console.log(p)
+"
