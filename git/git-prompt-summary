@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# Normalize pwd to the root
+while [ "`pwd`" != '/' ]
+do
+	if [ -e ".git" ]; then
+		break
+	else
+		cd ..
+	fi
+done
+
+if [ ! -e ".git" ]; then
+	/bin/echo -n ''
+	exit 0
+fi
+
+branch=`git branch --show-current`
+
+/bin/echo -n ' ['$branch']'

@@ -7,8 +7,7 @@ WORDCHARS=`echo $WORDCHARS | sed s-/--g | sed s/-//g`
 # Disable the windows-like behaviour where tabbing multiple times start cycling all available completions
 setopt noautomenu
 
-# Change prompt to the default from bash: '<machine name>:<current folder> <user>$ '
-PROMPT='%m:%1~ %n$ '
+source $FZK_SCRIPT_FOLDER/prompt
 
 # remove the confirmation when asking to `rm *`
 setopt rmstarsilent

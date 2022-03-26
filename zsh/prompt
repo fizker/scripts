@@ -1,0 +1,9 @@
+# enabling var substitution
+set -o PROMPT_SUBST
+
+precmd() {
+	vcs_info_msg_0_=`git-prompt-summary`
+}
+
+# Change prompt to the default from bash: '<machine name>:<current folder> <user>$ '
+PS1='%m:%1~$vcs_info_msg_0_ %n$ '
