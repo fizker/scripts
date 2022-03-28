@@ -1,5 +1,8 @@
 #!/bin/sh
 
+true=0
+false=1
+
 print_usage() {
 	echo 'Usage:'
 	echo '  git install-hooks [--status]'
@@ -13,7 +16,15 @@ script_location=$(dirname "$0")
 
 is_init=false
 is_status=false
+is_silent=$false
 is_help=false
+
+print() {
+	msg=$@
+	if [ $is_silent == $false ]; then
+		echo $msg
+	fi
+}
 
 for var in "$@"
 do
@@ -25,6 +36,9 @@ do
 	fi
 	if [ "$var" == "--help" ]; then
 		is_help=true
+	fi
+	if [ "$var" == "--silent" ]; then
+		is_silent=$true
 	fi
 done
 
@@ -40,29 +54,39 @@ hooks_path="$script_location"/git-templates/hooks
 
 if [ $is_status == "true" ]; then
 	current_global=$(git config --global core.hooksPath)
-	if [ "$current_global" == "$hooks_path" ]; then
-		echo "Global hook installed."
-	else
-		echo "Global hook is not installed."
-	fi
-
 	current_local=$(git config core.hooksPath)
-	if [ "$current_local" != "$current_global" ]; then
-		echo "Local hooksPath has overridden global hook."
-		echo "Local hooksPath: $current_local"
+
+	has_issues=$false
+
+	if [ "$current_global" == "$hooks_path" ]; then
+		print "Global hook installed."
+	else
+		print "Global hook is not installed."
+		has_issues=$true
 	fi
 
-	echo
+	if [ "$current_local" != "$current_global" ]; then
+		print "Local hooksPath has overridden global hook."
+		print "Local hooksPath: $current_local"
+		has_issues=$true
+	fi
+
+	print
 
 	additional_hooks=$(git config --get-all fizker.hooksPath)
 	if [ "$additional_hooks" == "" ]; then
-		echo "No additional hooks"
+		print "No additional hooks"
 	else
-		echo "Additional hooks:"
-		node -e "
+		print "Additional hooks:"
+		print $(node -e "
 			console.log(process.argv[1].split(/\n/g).map(x => '- ' + x).join('\n'))
-		" "$additional_hooks"
+		" "$additional_hooks")
 	fi
+
+	if [ $has_issues == $true ]; then
+		exit 1
+	fi
+
 	exit 0
 fi
 
