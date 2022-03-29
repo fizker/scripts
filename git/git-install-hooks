@@ -84,6 +84,8 @@ if [ $is_status == "true" ]; then
 	fi
 
 	if [ $has_issues == $true ]; then
+		print
+		print Resolve the issues by running '`git-install-hooks .`'
 		exit 1
 	fi
 
