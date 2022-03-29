@@ -12,12 +12,13 @@ is_dirty() {
 			switch(line[0]) {
 				case "M":
 				case "A":
+				case "U":
 					console.log("true")
 					break loop
 				case "?":
 					continue loop
 				default:
-					console.log(line)
+					process.stderr.write(`Unknown status marker: ${line}\n`)
 					continue loop
 			}
 		}
