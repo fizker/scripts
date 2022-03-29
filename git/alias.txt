@@ -9,5 +9,5 @@ check = !git diff --check && git diff --check --cached
 dangling = fsck --lost-found
 orphans = fsck --lost-found
 root = !bash -c 'echo 4b825dc642cb6eb9a060e54bf8d69288fbee4904'
-branch-point = !bash -c 'diff -u <(git rev-list --first-parent "${1:-master}") <(git rev-list --first-parent "${2:-HEAD}") | sed -ne \"s/^ //p\" | head -1' -
-bp = !bash -c 'diff -u <(git rev-list --first-parent "${1:-master}") <(git rev-list --first-parent "${2:-HEAD}") | sed -ne \"s/^ //p\" | head -1' -
+branch-point = !bash -c 'diff -u <(git rev-list --first-parent "${1:-$(git default-branch)}") <(git rev-list --first-parent "${2:-HEAD}") | sed -ne \"s/^ //p\" | head -1' -
+bp = !bash -c 'diff -u <(git rev-list --first-parent "${1:-$(git default-branch)}") <(git rev-list --first-parent "${2:-HEAD}") | sed -ne \"s/^ //p\" | head -1' -
