@@ -12,6 +12,7 @@ is_dirty() {
 			switch(line[0]) {
 				case "M":
 				case "A":
+				case "R":
 				case "U":
 					console.log("true")
 					break loop
