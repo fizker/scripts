@@ -1,0 +1,55 @@
+#!/bin/sh
+
+is_dirty() {
+	status=`git status --short --porcelain`
+	node -e '
+		const statusLines = (process.argv[1] ?? "")
+			.split("\n")
+			.map(x => x.trim())
+			.filter(Boolean)
+
+		loop: for(const line of statusLines) {
+			switch(line[0]) {
+				case "M":
+				case "A":
+				case "U":
+					console.log("true")
+					break loop
+				case "?":
+					continue loop
+				default:
+					process.stderr.write(`Unknown status marker: ${line}\n`)
+					continue loop
+			}
+		}
+	' "$status"
+}
+
+# Normalize pwd to the root
+while [ "`pwd`" != '/' ]
+do
+	if [ -e '.git' ]; then
+		break
+	else
+		cd ..
+	fi
+done
+
+if [ ! -e '.git' ]; then
+	exit 0
+fi
+
+branch=`git branch --show-current`
+if [ `is_dirty` ]; then
+	dirty_color=red
+else
+	dirty_color=green
+fi
+
+if git-install-hooks --status --silent; then
+	hooks_status=''
+else
+	hooks_status=' %F{red}Issue with hooks - run `git-install-hooks`%f'
+fi
+
+/bin/echo -n ' [%F{'$dirty_color'}'$branch'%f]'$hooks_status
