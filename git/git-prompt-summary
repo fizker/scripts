@@ -10,13 +10,16 @@ is_dirty() {
 
 		loop: for(const line of statusLines) {
 			switch(line[0]) {
-				case "M":
-				case "A":
-				case "R":
-				case "U":
+				case "A": // added
+				case "C": // copied
+				case "D": // deleted
+				case "M": // modified
+				case "R": // renamed
+				case "U": // updated but unmerged (merge conflict)
 					console.log("true")
 					break loop
-				case "?":
+				case "?": // untracked
+				case "!": // ignored
 					continue loop
 				default:
 					process.stderr.write(`Unknown status marker: ${line}\n`)
