@@ -22,10 +22,14 @@ if [ ! -e '.git' ]; then
 		case 'none':
 			break
 		case 'dirname':
-			console.log(path.basename('$current_pwd'))
+			if('$current_pwd' === '$HOME') {
+				console.log('~')
+			} else {
+				console.log(path.basename('$current_pwd'))
+			}
 			break
 		case 'full':
-			console.log('$current_pwd')
+			console.log('$current_pwd'.replace(new RegExp('^$HOME'), '~'))
 			break
 		}
 	"
