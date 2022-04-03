@@ -12,6 +12,11 @@ print_usage() {
 	exit 1
 }
 
+realpath() {
+	path=$1
+	node -e "console.log(require('path').resolve('$path'))"
+}
+
 script_location=$(dirname "$0")
 
 is_init=false
@@ -50,7 +55,7 @@ if [ $is_help == "true" ]; then
 	print_usage
 fi
 
-hooks_path="$script_location"/git-templates/hooks
+hooks_path=$(realpath "$script_location"/git-templates/hooks)
 
 if [ $is_status == "true" ]; then
 	current_global=$(git config --global core.hooksPath)
