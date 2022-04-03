@@ -1,8 +1,3 @@
-source $FZK_SCRIPT_FOLDER/config
-source $FZK_SCRIPT_FOLDER/completions
-$FZK_SCRIPT_FOLDER/../macos/test-sudo-touch-id
-source $FZK_SCRIPT_FOLDER/../bash/aliases.txt
-
 # This exposes the nvm-installed node and npm to non-user programs when the shell is opened
 # If nvm updates node/npm, it will be updated on the next new shell
 if command -v node &> /dev/null && command -v nvm &> /dev/null
@@ -18,3 +13,8 @@ then
 		sudo ln -fs ~/bin/npm /usr/local/bin/npm
 	fi
 fi
+
+source $FZK_SCRIPT_FOLDER/config
+source $FZK_SCRIPT_FOLDER/completions
+$FZK_SCRIPT_FOLDER/../macos/test-sudo-touch-id
+source $FZK_SCRIPT_FOLDER/../bash/aliases.txt
