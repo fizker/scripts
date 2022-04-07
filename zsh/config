@@ -1,3 +1,6 @@
+# Disable the cache for completing executables
+zstyle ":completion:*:commands" rehash 1
+
 # Change tab size from 8 to 4
 tabs -4
 
