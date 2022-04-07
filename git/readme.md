@@ -18,6 +18,6 @@ Run `git install-hooks <local repo> [more local repos, ...]` to copy the current
 Repo-specific hooks
 -------------------
 
-The hooks automatically execute a neighbor script with `.local` appended. This can be used to keeping repo-specific scripts around that the system will not override.
+Hooks installed in `.git/hooks` will automatically be executed after the global scripts.
 
-As an example, `pre-commit` executes `pre-commit.local` after running the global scripts.
+Hooks that are installed using `git config core.hooksPath` will be registered when `git install-hooks <local repo>` is executed, and also run automatically after the global hooks.
