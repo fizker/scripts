@@ -7,7 +7,7 @@ WORDCHARS=`echo $WORDCHARS | sed s-/--g | sed s/-//g`
 # Disable the windows-like behaviour where tabbing multiple times start cycling all available completions
 setopt noautomenu
 
-source $FZK_SCRIPT_FOLDER/prompt
+source $FZK_SCRIPT_FOLDER/zsh/prompt
 
 # remove the confirmation when asking to `rm *`
 setopt rmstarsilent

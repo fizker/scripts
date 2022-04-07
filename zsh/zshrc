@@ -15,11 +15,11 @@ then
 fi
 
 # Path to bundled scripts
-PATH=$FZK_SCRIPT_FOLDER/../bash:$FZK_SCRIPT_FOLDER/../git:$PATH
+PATH=$FZK_SCRIPT_FOLDER/bash:$FZK_SCRIPT_FOLDER/git:$PATH
 # Convenient paths for common places I put scripts
 PATH=node_modules/.bin:~/bin:$PATH
 
-source $FZK_SCRIPT_FOLDER/config
-source $FZK_SCRIPT_FOLDER/completions
-$FZK_SCRIPT_FOLDER/../macos/test-sudo-touch-id
-source $FZK_SCRIPT_FOLDER/../bash/aliases.txt
+source $FZK_SCRIPT_FOLDER/zsh/config
+source $FZK_SCRIPT_FOLDER/zsh/completions
+$FZK_SCRIPT_FOLDER/macos/test-sudo-touch-id
+source $FZK_SCRIPT_FOLDER/bash/aliases.txt
