@@ -1,5 +1,32 @@
 #!/bin/sh
 
+remote_status() {
+	status=`git status --branch --porcelain`
+	node -e '
+		const statusLines = (process.argv[1] ?? "")
+			.split("\n")
+			.map(x => x.trim())
+			.filter(Boolean)
+
+		const line = statusLines[0]
+
+		let hadStatus = false
+		function print(msg) {
+			if(!hadStatus) {
+				process.stdout.write(" ")
+			}
+			hadStatus = true
+			process.stdout.write(msg)
+		}
+		if(line.includes("ahead")) {
+			print("↑")
+		}
+		if(line.includes("behind")) {
+			print("↓")
+		}
+	' "$status"
+}
+
 is_dirty() {
 	status=`git status --short --porcelain`
 	node -e '
@@ -56,4 +83,4 @@ else
 	hooks_status=' %F{red}Issue with hooks - run `git-install-hooks`%f'
 fi
 
-/bin/echo -n ' [%F{'$dirty_color'}'$branch'%f]'$hooks_status
+/bin/echo -n ' [%F{'$dirty_color'}'$branch'%f'`remote_status`']'$hooks_status
