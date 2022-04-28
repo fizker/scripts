@@ -10,6 +10,16 @@ Enable Touch ID for `sudo`
 4. `sudo` commands in new prompts now request Touch ID before password
 
 
+Enable proxy icons (macOS 12)
+-----------------------------
+
+1. Open System Settings
+2. Navigate to Accessibility -> Display
+3. Tick on "Show window title icons"
+
+![Settings page where icon is](enable-proxy-icons.png)
+
+
 Edit Xcode Built-in Snippets
 ----------------------------
 
