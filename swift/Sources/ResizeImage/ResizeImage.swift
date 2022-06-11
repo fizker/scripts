@@ -81,14 +81,9 @@ struct ResizeImage: ParsableCommand {
 		let data = image.tiffRepresentation
 		let imageRep = data.flatMap(NSBitmapImageRep.init(data:))
 		guard let pngRep = imageRep?.representation(using: .png, properties: [:])
-		else { throw NSError(domain: "image", code: 1) }
+		else { throw Error.couldNotCreatePNGRepresentation }
 		try pngRep.write(to: output, options: [])
 	}
-}
-
-func exit(_ code: Int32, _ message: String) -> Never {
-	print(message)
-	exit(code)
 }
 
 extension NSImage {
