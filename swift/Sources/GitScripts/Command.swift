@@ -2,16 +2,15 @@ import Foundation
 
 struct Command {
 	var path: String
-	var workingDirectory: String
+	var workingDirectory: URL
 
 	private var exists: Bool?
 
-	static var currentWorkingDirectory: String {
-		#warning("TODO: Implement currentDirectory")
-		return ""
+	static var currentWorkingDirectory: URL {
+		Process().currentDirectoryURL!
 	}
 
-	init(_ path: String, workingDirectory: String = Command.currentWorkingDirectory) {
+	init(_ path: String, workingDirectory: URL = Command.currentWorkingDirectory) {
 		self.path = path
 		self.workingDirectory = workingDirectory
 	}
@@ -31,6 +30,8 @@ struct Command {
 	func execute(arguments: [String] = []) async throws -> Result {
 		try await Task {
 			let process = Process()
+			process.currentDirectoryURL = workingDirectory
+
 			if #available(macOS 13.0, *) {
 				process.executableURL = .init(filePath: path)
 			} else {
