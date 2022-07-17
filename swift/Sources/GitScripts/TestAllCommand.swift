@@ -8,22 +8,23 @@ struct TestAllCommand: AsyncParsableCommand {
 		abstract: "Run the given commands, executes them all and repeats the output from any that failed."
 	)
 
-	@Argument()
+	@Flag()
+	var includeHooksPath = false
+
+	@Option(name: [ .customLong("command"), .short ], parsing: .singleValue)
 	var commands: [String]
 
-	struct E: Error, LocalizedError {
-		let errorDescription: String?
-	}
+	@Argument()
+	var arguments: [String] = []
 
 	func run() async throws {
 		var errors: [String] = []
 
-		for raw in commands {
-			let parsed = Command.parseCommand(raw)
-			let command = Command(parsed.command)
+		for path in commands {
+			let command = Command(path)
 
 			if command.exists {
-				let result = try await command.execute(arguments: parsed.arguments)
+				let result = try await command.execute(arguments: arguments)
 				if result.exitCode != 0 {
 					var data = try result.stderr
 					if data.isEmpty {
