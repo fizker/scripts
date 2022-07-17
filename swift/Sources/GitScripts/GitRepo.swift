@@ -4,8 +4,7 @@ struct GitRepo {
 		case unknown(String)
 	}
 
-	#warning("TODO: look up where git is instead of assuming")
-	let git = Command("/usr/bin/git")
+	let git = Command("git")
 	var root: String
 
 	init() async throws {

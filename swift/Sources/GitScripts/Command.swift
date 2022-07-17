@@ -1,42 +1,95 @@
 import Foundation
 
-struct Command {
-	var path: String
-	var workingDirectory: URL
+extension FileManager {
+	private func path(for url: URL) -> String {
+		let path = url.absoluteString
+		let scheme = url.scheme.map { $0 + "://" } ?? ""
+		let p = path[scheme.endIndex...]
+		return String(p)
+	}
 
-	private var exists: Bool?
+	func fileExists(at url: URL) -> Bool {
+		guard url.isFileURL
+		else { return false }
+
+		let path = path(for: url)
+
+		return fileExists(atPath: path)
+	}
+
+	func isExecutableFile(at url: URL) -> Bool {
+		guard url.isFileURL
+		else { return false }
+
+		let path = path(for: url)
+
+		return isExecutableFile(atPath: path)
+	}
+}
+
+struct Command {
+	let command: URL
+	let workingDirectory: URL
+	let exists: Bool
 
 	static var currentWorkingDirectory: URL {
 		Process().currentDirectoryURL!
 	}
 
 	init(_ path: String, workingDirectory: URL = Command.currentWorkingDirectory) {
-		self.path = path
 		self.workingDirectory = workingDirectory
-	}
-
-	mutating func exists() async -> Bool {
-		if let exists = exists {
-			return exists
-		}
 
 		let manager = FileManager.default
-		let result = manager.fileExists(atPath: path)
-		exists = result
-		return result
+		let url: URL
+		if path.starts(with: "/") {
+			if #available(macOS 13.0, *) {
+				url = .init(filePath: path)
+			} else {
+				url = .init(fileURLWithPath: path)
+			}
+		} else if path.starts(with: ".") || path.contains("/") {
+			if #available(macOS 13.0, *) {
+				url = workingDirectory.appending(path: path)
+			} else {
+				url = workingDirectory.appendingPathComponent(path)
+			}
+		} else {
+			var paths = ProcessInfo.processInfo.environment["PATH"]?.components(separatedBy: ":") ?? []
+			paths.insert(".", at: 0)
+
+			for p in paths {
+				let file = "\(p)/\(path)"
+				if manager.isExecutableFile(atPath: file) {
+					if #available(macOS 13.0, *) {
+						command = .init(filePath: file)
+					} else {
+						command = .init(fileURLWithPath: file)
+					}
+					exists = true
+
+					return
+				}
+			}
+
+			if #available(macOS 13.0, *) {
+				url = .init(filePath: path)
+			} else {
+				url = .init(fileURLWithPath: path)
+			}
+		}
+
+		exists = manager.isExecutableFile(at: url)
+		command = url
 	}
 
 	@discardableResult
 	func execute(arguments: [String] = []) async throws -> Result {
 		try await Task {
 			let process = Process()
+			process.environment = ProcessInfo.processInfo.environment
 			process.currentDirectoryURL = workingDirectory
 
-			if #available(macOS 13.0, *) {
-				process.executableURL = .init(filePath: path)
-			} else {
-				process.executableURL = .init(fileURLWithPath: path)
-			}
+			process.executableURL = command
 			process.arguments = arguments
 
 			let stdout = Pipe()
