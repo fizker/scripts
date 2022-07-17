@@ -82,6 +82,11 @@ public struct Command {
 		command = url
 	}
 
+	public static func parseCommand(_ cmd: String) -> (command: String, arguments: [String]) {
+		let all = cmd.components(separatedBy: .whitespaces)
+		return (all.first ?? "", Array(all[1...]))
+	}
+
 	@discardableResult
 	public func execute(arguments: [String] = []) async throws -> Result {
 		try await Task {

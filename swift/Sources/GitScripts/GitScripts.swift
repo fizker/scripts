@@ -4,8 +4,7 @@ import Foundation
 
 @main
 struct GitScripts: AsyncParsableCommand {
-	mutating func run() async throws {
-		let repo = try await GitRepo()
-		print(repo.root)
-	}
+	static let configuration = CommandConfiguration(subcommands: [
+		TestAllCommand.self,
+	])
 }
