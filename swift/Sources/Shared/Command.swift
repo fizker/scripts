@@ -17,6 +17,13 @@ extension FileManager {
 		return fileExists(atPath: path)
 	}
 
+	func fileStatus(atPath path: String) -> (exists: Bool, isDirectory: Bool) {
+		let b: UnsafeMutablePointer<ObjCBool> = .allocate(capacity: 1)
+		let exists = fileExists(atPath: path, isDirectory: b)
+
+		return (exists, exists ? b.pointee.boolValue : false)
+	}
+
 	func isExecutableFile(at url: URL) -> Bool {
 		guard url.isFileURL
 		else { return false }
@@ -28,8 +35,8 @@ extension FileManager {
 }
 
 public struct Command {
-	let command: URL
-	let workingDirectory: URL
+	public let command: URL
+	public let workingDirectory: URL
 	public let exists: Bool
 
 	public static var currentWorkingDirectory: URL {
@@ -59,7 +66,7 @@ public struct Command {
 
 			for p in paths {
 				let file = "\(p)/\(path)"
-				if manager.isExecutableFile(atPath: file) {
+				if !manager.fileStatus(atPath: file).isDirectory && manager.isExecutableFile(atPath: file) {
 					if #available(macOS 13.0, *) {
 						command = .init(filePath: file)
 					} else {
