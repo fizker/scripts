@@ -27,16 +27,16 @@ extension FileManager {
 	}
 }
 
-struct Command {
+public struct Command {
 	let command: URL
 	let workingDirectory: URL
-	let exists: Bool
+	public let exists: Bool
 
-	static var currentWorkingDirectory: URL {
+	public static var currentWorkingDirectory: URL {
 		Process().currentDirectoryURL!
 	}
 
-	init(_ path: String, workingDirectory: URL = Command.currentWorkingDirectory) {
+	public init(_ path: String, workingDirectory: URL = Command.currentWorkingDirectory) {
 		self.workingDirectory = workingDirectory
 
 		let manager = FileManager.default
@@ -83,7 +83,7 @@ struct Command {
 	}
 
 	@discardableResult
-	func execute(arguments: [String] = []) async throws -> Result {
+	public func execute(arguments: [String] = []) async throws -> Result {
 		try await Task {
 			let process = Process()
 			process.environment = ProcessInfo.processInfo.environment
@@ -107,20 +107,20 @@ struct Command {
 		}.result.get()
 	}
 
-	struct Result {
-		var exitCode: Int
+	public struct Result {
+		public var exitCode: Int
 
 		private var stdoutPipe: PipeCache
 		private var stderrPipe: PipeCache
 
-		var stdout: Data {
+		public var stdout: Data {
 			get throws { try stdoutPipe.data }
 		}
-		var stderr: Data {
+		public var stderr: Data {
 			get throws { try stderrPipe.data }
 		}
 
-		init(exitCode: Int, stdout: Pipe, stderr: Pipe) {
+		public init(exitCode: Int, stdout: Pipe, stderr: Pipe) {
 			self.exitCode = exitCode
 			self.stdoutPipe = .init(pipe: stdout)
 			self.stderrPipe = .init(pipe: stderr)

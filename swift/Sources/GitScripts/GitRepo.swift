@@ -1,3 +1,5 @@
+import Shared
+
 struct GitRepo {
 	enum Error: Swift.Error {
 		case notRepo

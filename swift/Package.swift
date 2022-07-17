@@ -25,6 +25,7 @@ let package = Package(
 			name: "GitScripts",
 			dependencies: [
 				.product(name: "ArgumentParser", package: "swift-argument-parser"),
+				"Shared",
 			]
 		),
 		.executableTarget(
@@ -33,5 +34,6 @@ let package = Package(
 				.product(name: "ArgumentParser", package: "swift-argument-parser"),
 			]
 		),
+		.target(name: "Shared"),
 	]
 )
