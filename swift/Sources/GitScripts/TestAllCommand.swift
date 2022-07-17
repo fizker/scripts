@@ -20,7 +20,25 @@ struct TestAllCommand: AsyncParsableCommand {
 	func run() async throws {
 		var errors: [String] = []
 
-		for path in commands {
+		var commands = commands
+
+		if includeHooksPath {
+			let git = Command("git")
+			let result = try await git.execute(arguments: ["config", "--get-all", "fizker.hooksPath"])
+			if result.exitCode == 0 {
+				let raw = try result.stdout
+				if let str = String(data: raw, encoding: .utf8) {
+					let items = str
+						.components(separatedBy: .newlines)
+						.joined(separator: ":")
+						.components(separatedBy: CharacterSet(charactersIn: ":"))
+
+					commands.append(contentsOf: items)
+				}
+			}
+		}
+
+		for path in commands where !path.isEmpty {
 			let command = Command(path)
 
 			if command.exists {
