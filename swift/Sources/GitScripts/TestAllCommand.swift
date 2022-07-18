@@ -8,8 +8,8 @@ struct TestAllCommand: AsyncParsableCommand {
 		abstract: "Run the given commands, executes them all and repeats the output from any that failed."
 	)
 
-	@Flag()
-	var includeHooksPath = false
+	@Option(name: [ .customLong("execute-hooks-path"), .short ], help: "The name of the hook to run from the hooks path.")
+	var hookName: String?
 
 	@Option(name: [ .customLong("command"), .short ], parsing: .singleValue)
 	var commands: [String]
@@ -22,7 +22,7 @@ struct TestAllCommand: AsyncParsableCommand {
 
 		var commands = commands
 
-		if includeHooksPath {
+		if let hookName = hookName {
 			let git = Command("git")
 			let result = try await git.execute(arguments: ["config", "--get-all", "fizker.hooksPath"])
 			if result.exitCode == 0 {
@@ -33,7 +33,7 @@ struct TestAllCommand: AsyncParsableCommand {
 						.joined(separator: ":")
 						.components(separatedBy: CharacterSet(charactersIn: ":"))
 
-					commands.append(contentsOf: items)
+					commands.append(contentsOf: items.map { "\($0)/\(hookName)" })
 				}
 			}
 		}

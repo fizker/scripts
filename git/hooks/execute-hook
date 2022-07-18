@@ -25,7 +25,7 @@ hook_path="$script_location"/"$hook_name"/hook
 
 git_root=$(git rev-parse --show-toplevel)
 
-"$helper" test-all --include-hooks-path \
+"$helper" test-all --execute-hooks-path "$hook_name" \
 	--command "$hook_path" \
 	--command "$git_root"/.git/hooks/"$hook_name" \
 	--command "$git_root"/.git/hooks/"$hook_name".local \
