@@ -3,6 +3,14 @@
 script_location=$(dirname "$0")
 hook_name=$(basename "$1")
 
+helper="$script_location"/../../swift/bin/git-scripts
+if [ ! -e "$helper" ];
+then
+	source "$script_location"/../../bash/colors.sh
+	echo "${red}"git-scripts not compiled, skipping hooks."${reset}"
+	exit 0
+fi
+
 if ! hash node 2> /dev/null
 then
 	echo "Node not found, skipping $hook_name hook"
@@ -17,7 +25,7 @@ hook_path="$script_location"/"$hook_name"/hook
 
 git_root=$(git rev-parse --show-toplevel)
 
-"$script_location"/../../swift/bin/git-scripts test-all --include-hooks-path \
+"$helper" test-all --include-hooks-path \
 	--command "$hook_path" \
 	--command "$git_root"/.git/hooks/"$hook_name" \
 	--command "$git_root"/.git/hooks/"$hook_name".local \
