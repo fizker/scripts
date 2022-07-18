@@ -9,6 +9,10 @@ let package = Package(
 	],
 	products: [
 		.executable(
+			name: "git-scripts",
+			targets: ["GitScripts"]
+		),
+		.executable(
 			name: "resize-image",
 			targets: ["ResizeImage"]
 		),
@@ -18,10 +22,18 @@ let package = Package(
 	],
 	targets: [
 		.executableTarget(
+			name: "GitScripts",
+			dependencies: [
+				.product(name: "ArgumentParser", package: "swift-argument-parser"),
+				"Shared",
+			]
+		),
+		.executableTarget(
 			name: "ResizeImage",
 			dependencies: [
 				.product(name: "ArgumentParser", package: "swift-argument-parser"),
 			]
 		),
+		.target(name: "Shared"),
 	]
 )

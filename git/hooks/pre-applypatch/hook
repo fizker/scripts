@@ -13,4 +13,6 @@ script_path=$(dirname "$0")
 "$script_path"/../check-old-style-setup
 
 # Execute the pre-commit hooks to automatically get those validations
-"$script_path"/../pre-commit/hook "$@"
+"$script_path"/../../../swift/bin/git-scripts test-all \
+	--command "$script_path"/../pre-commit/hook \
+	"$@"
