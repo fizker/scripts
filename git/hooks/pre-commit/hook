@@ -7,6 +7,7 @@ script_path=$(dirname "$0")
 
 "$script_path"/../check-old-style-setup
 
-"$script_path"/diff-check
-"$script_path"/restrict-dot-only.js
-"$script_path"/utf8-bom.js
+"$script_path"/../../../swift/bin/git-scripts test-all \
+	--command "$script_path"/diff-check \
+	--command "$script_path"/restrict-dot-only.js \
+	--command "$script_path"/utf8-bom.js \

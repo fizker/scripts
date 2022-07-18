@@ -17,4 +17,6 @@ script_path=$(dirname "$0")
 
 "$script_path"/../check-old-style-setup
 
-"$script_path"/tmp-commits "$@"
+"$script_path"/../../../swift/bin/git-scripts test-all \
+	--command "$script_path"/tmp-commits \
+	"$@"
