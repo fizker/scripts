@@ -49,17 +49,17 @@ public struct Command {
 		let manager = FileManager.default
 		let url: URL
 		if path.starts(with: "/") {
-//			if #available(macOS 13.0, *) {
-//				url = .init(filePath: path)
-//			} else {
+			if #available(macOS 13.0, *) {
+				url = .init(filePath: path)
+			} else {
 				url = .init(fileURLWithPath: path)
-//			}
+			}
 		} else if path.starts(with: ".") || path.contains("/") {
-//			if #available(macOS 13.0, *) {
-//				url = workingDirectory.appending(path: path)
-//			} else {
+			if #available(macOS 13.0, *) {
+				url = workingDirectory.appending(path: path)
+			} else {
 				url = workingDirectory.appendingPathComponent(path)
-//			}
+			}
 		} else {
 			var paths = ProcessInfo.processInfo.environment["PATH"]?.components(separatedBy: ":") ?? []
 			paths.insert(".", at: 0)
@@ -67,22 +67,22 @@ public struct Command {
 			for p in paths {
 				let file = "\(p)/\(path)"
 				if !manager.fileStatus(atPath: file).isDirectory && manager.isExecutableFile(atPath: file) {
-//					if #available(macOS 13.0, *) {
-//						command = .init(filePath: file)
-//					} else {
+					if #available(macOS 13.0, *) {
+						command = .init(filePath: file)
+					} else {
 						command = .init(fileURLWithPath: file)
-//					}
+					}
 					exists = true
 
 					return
 				}
 			}
 
-//			if #available(macOS 13.0, *) {
-//				url = .init(filePath: path)
-//			} else {
+			if #available(macOS 13.0, *) {
+				url = .init(filePath: path)
+			} else {
 				url = .init(fileURLWithPath: path)
-//			}
+			}
 		}
 
 		exists = manager.isExecutableFile(at: url)
