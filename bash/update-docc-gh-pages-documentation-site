@@ -8,12 +8,29 @@ if [ ! -e 'Package.swift' ]; then
 	exit 1
 fi
 
+if [ "`swift package plugin --list | grep generate-documentation`" == "" ];
+then
+	echo Missing plugin for generating documentation. See https://github.com/apple/swift-docc-plugin for details.
+	exit 1
+fi
+
 repo_name=$1
 target=$2
 
 # Use git worktree to checkout the gh-pages branch of this repository in a gh-pages sub-directory
 git fetch
-git worktree add --checkout gh-pages origin/gh-pages
+
+# Check if gh-pages exists on the remote, or add it first
+if [ "`git branch --remote | grep gh-pages`" == '' ];
+then
+	git worktree add --detach gh-pages
+	cd gh-pages
+	git checkout --orphan gh-pages
+	git reset --hard
+	cd ..
+else
+	git worktree add --checkout gh-pages origin/gh-pages
+fi
 
 # Pretty print DocC JSON output so that it can be consistently diffed between commits
 export DOCC_JSON_PRETTYPRINT=YES
