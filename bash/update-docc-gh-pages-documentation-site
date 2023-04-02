@@ -16,6 +16,8 @@ fi
 
 repo_name=$1
 target=$2
+# Note that all remaining params are passed on to the call to swift package below.
+# If more params are expected, that needs to be updated.
 
 # Use git worktree to checkout the gh-pages branch of this repository in a gh-pages sub-directory
 git fetch
@@ -45,7 +47,8 @@ swift package \
 	--disable-indexing \
 	--transform-for-static-hosting \
 	--hosting-base-path $repo_name \
-	--output-path 'gh-pages/docs'
+	--output-path 'gh-pages/docs' \
+	"${@: 3}"
 
 # Save the current commit we've just built documentation from in a variable
 CURRENT_COMMIT_HASH=`git rev-parse --short HEAD`
