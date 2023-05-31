@@ -15,8 +15,11 @@ final class CommandTests: XCTestCase {
 			}
 			let result = try await command.execute(arguments: [ file ])
 			exp.fulfill()
-			XCTAssertFalse(try result.stdout.isEmpty)
-			XCTAssertTrue(try result.stderr.isEmpty)
+
+			let fileContent = FileManager.default.contents(atPath: file)
+
+			XCTAssertEqual(result.stdout, fileContent)
+			XCTAssertTrue(result.stderr.isEmpty)
 		}
 
 		await fulfillment(of: [exp], timeout: 1)

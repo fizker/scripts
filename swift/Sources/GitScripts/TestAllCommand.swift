@@ -26,7 +26,7 @@ struct TestAllCommand: AsyncParsableCommand {
 			let git = Command("git")
 			let result = try await git.execute(arguments: ["config", "--get-all", "fizker.hooksPath"])
 			if result.exitCode == 0 {
-				let raw = try result.stdout
+				let raw = result.stdout
 				if let str = String(data: raw, encoding: .utf8) {
 					let items = str
 						.components(separatedBy: .newlines)
@@ -44,9 +44,9 @@ struct TestAllCommand: AsyncParsableCommand {
 			if command.exists {
 				let result = try await command.execute(arguments: arguments)
 				if result.exitCode != 0 {
-					var data = try result.stderr
+					var data = result.stderr
 					if data.isEmpty {
-						data = try result.stdout
+						data = result.stdout
 					}
 					let message = String(data: data, encoding: .utf8)!
 					errors.append(message.trimmingCharacters(in: .whitespacesAndNewlines))

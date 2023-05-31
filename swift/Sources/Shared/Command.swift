@@ -104,58 +104,46 @@ public struct Command {
 			process.executableURL = command
 			process.arguments = arguments
 
-			let stdout = Pipe()
-			process.standardOutput = stdout
+			let stdout = PipeReader()
+			process.standardOutput = stdout.pipe
 
-			let stderr = Pipe()
-			process.standardError = stderr
+			let stderr = PipeReader()
+			process.standardError = stderr.pipe
 
 			try process.run()
 			process.waitUntilExit()
 
 			let exitCode = process.terminationStatus
 
-			return Result(exitCode: Int(exitCode), stdout: stdout, stderr: stderr)
+			return Result(exitCode: Int(exitCode), stdout: stdout.data, stderr: stderr.data)
 		}.result.get()
+	}
+
+	private class PipeReader {
+		let pipe: Pipe
+		let fileHandle: FileHandle
+		private (set) var data: Data = .init()
+
+		init(pipe: Pipe = .init()) {
+			self.pipe = pipe
+			fileHandle = pipe.fileHandleForReading
+
+			DispatchQueue(label: "notification queue").async {
+				repeat {
+					guard
+						let data = try? self.fileHandle.read(upToCount: 1024),
+						!data.isEmpty
+					else { break }
+
+					self.data.append(contentsOf: data)
+				} while true
+			}
+		}
 	}
 
 	public struct Result {
 		public var exitCode: Int
-
-		private var stdoutPipe: PipeCache
-		private var stderrPipe: PipeCache
-
-		public var stdout: Data {
-			get throws { try stdoutPipe.data }
-		}
-		public var stderr: Data {
-			get throws { try stderrPipe.data }
-		}
-
-		public init(exitCode: Int, stdout: Pipe, stderr: Pipe) {
-			self.exitCode = exitCode
-			self.stdoutPipe = .init(pipe: stdout)
-			self.stderrPipe = .init(pipe: stderr)
-		}
-
-		class PipeCache {
-			let pipe: Pipe
-			var data: Data {
-				get throws {
-					if let data = cachedData {
-						return data
-					}
-					let file = pipe.fileHandleForReading
-					let data = try file.readToEnd() ?? Data()
-					cachedData = data
-					return data
-				}
-			}
-			private var cachedData: Data?
-
-			init(pipe: Pipe) {
-				self.pipe = pipe
-			}
-		}
+		public var stdout: Data
+		public var stderr: Data
 	}
 }
