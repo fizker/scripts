@@ -1,5 +1,7 @@
 import Shared
 
+let noRepoRegex = try! Regex("not a .*repo")
+
 struct GitRepo {
 	enum Error: Swift.Error {
 		case notRepo
@@ -14,8 +16,9 @@ struct GitRepo {
 		guard result.exitCode == 0
 		else {
 			let message = String(data: result.stderr, encoding: .utf8)!
-			#warning("TODO: Use regex when new-swift is released")
-			if message.contains("not") && message.contains("repo") {
+
+			let match = try noRepoRegex.wholeMatch(in: message)
+			if match != nil {
 				throw Error.notRepo
 			}
 
