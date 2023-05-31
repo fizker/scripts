@@ -35,5 +35,12 @@ let package = Package(
 			]
 		),
 		.target(name: "Shared"),
+		.testTarget(
+			name: "SharedTests",
+			dependencies: ["Shared"],
+			resources: [
+				.copy("BigCatTarget"),
+			]
+		),
 	]
 )
