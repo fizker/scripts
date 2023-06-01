@@ -18,10 +18,10 @@ remote_status() {
 			hadStatus = true
 			process.stdout.write(msg)
 		}
-		if(line.includes("ahead")) {
+		if(/ahead \d+/.test(line)) {
 			print("↑")
 		}
-		if(line.includes("behind")) {
+		if(/behind \d+/.test(line)) {
 			print("↓")
 		}
 	' "$status"
