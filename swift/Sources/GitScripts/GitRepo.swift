@@ -1,6 +1,6 @@
 import Shared
 
-let noRepoRegex = try! Regex("not a .*repo")
+let noRepoRegex = /not a .*repo/
 
 struct GitRepo {
 	enum Error: Swift.Error {
