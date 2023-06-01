@@ -1,39 +1,5 @@
 import Foundation
 
-extension FileManager {
-	private func path(for url: URL) -> String {
-		let path = url.absoluteString
-		let scheme = url.scheme.map { $0 + "://" } ?? ""
-		let p = path[scheme.endIndex...]
-		return String(p)
-	}
-
-	func fileExists(at url: URL) -> Bool {
-		guard url.isFileURL
-		else { return false }
-
-		let path = path(for: url)
-
-		return fileExists(atPath: path)
-	}
-
-	func fileStatus(atPath path: String) -> (exists: Bool, isDirectory: Bool) {
-		let b: UnsafeMutablePointer<ObjCBool> = .allocate(capacity: 1)
-		let exists = fileExists(atPath: path, isDirectory: b)
-
-		return (exists, exists ? b.pointee.boolValue : false)
-	}
-
-	func isExecutableFile(at url: URL) -> Bool {
-		guard url.isFileURL
-		else { return false }
-
-		let path = path(for: url)
-
-		return isExecutableFile(atPath: path)
-	}
-}
-
 public struct Command {
 	public let command: URL
 	public let workingDirectory: URL
@@ -104,41 +70,21 @@ public struct Command {
 			process.executableURL = command
 			process.arguments = arguments
 
-			let stdout = PipeReader()
-			process.standardOutput = stdout.pipe
+			let stdout = Pipe()
+			process.standardOutput = stdout
+			let stdoutData = CachedStreamReader(content: AsyncStream(pipe: stdout))
 
-			let stderr = PipeReader()
-			process.standardError = stderr.pipe
+			let stderr = Pipe()
+			process.standardError = stderr
+			let stderrData = CachedStreamReader(content: AsyncStream(pipe: stderr))
 
 			try process.run()
 			process.waitUntilExit()
 
 			let exitCode = process.terminationStatus
 
-			return Result(exitCode: Int(exitCode), stdout: stdout.data, stderr: stderr.data)
+			return Result(exitCode: Int(exitCode), stdout: stdoutData.data, stderr: stderrData.data)
 		}.result.get()
-	}
-
-	private class PipeReader {
-		let pipe: Pipe
-		let fileHandle: FileHandle
-		private (set) var data: Data = .init()
-
-		init(pipe: Pipe = .init()) {
-			self.pipe = pipe
-			fileHandle = pipe.fileHandleForReading
-
-			DispatchQueue(label: "notification queue").async {
-				repeat {
-					guard
-						let data = try? self.fileHandle.read(upToCount: 1024),
-						!data.isEmpty
-					else { break }
-
-					self.data.append(contentsOf: data)
-				} while true
-			}
-		}
 	}
 
 	public struct Result {
