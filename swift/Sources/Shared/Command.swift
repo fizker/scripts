@@ -83,7 +83,7 @@ public struct Command {
 
 			let exitCode = process.terminationStatus
 
-			return Result(exitCode: Int(exitCode), stdout: stdoutData.data, stderr: stderrData.data)
+			return Result(exitCode: Int(exitCode), stdout: await stdoutData.data, stderr: await stderrData.data)
 		}.result.get()
 	}
 
