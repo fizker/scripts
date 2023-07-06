@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# Guard against ancient-node and skip running (nvm makes noise)
+if ! `node -e '"" ?? ""' &> /dev/null`; then
+	exit
+fi
+
 remote_status() {
 	status=`git status --branch --porcelain`
 	node -e '
