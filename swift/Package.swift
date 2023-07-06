@@ -22,6 +22,10 @@ let package = Package(
 			targets: ["GitScripts"]
 		),
 		.executable(
+			name: "reorder-paths",
+			targets: ["ReorderPaths"]
+		),
+		.executable(
 			name: "resize-image",
 			targets: ["ResizeImage"]
 		),
@@ -35,6 +39,13 @@ let package = Package(
 			dependencies: [
 				.product(name: "ArgumentParser", package: "swift-argument-parser"),
 				"Shared",
+			],
+			swiftSettings: upcomingFeatures
+		),
+		.executableTarget(
+			name: "ReorderPaths",
+			dependencies: [
+				.product(name: "ArgumentParser", package: "swift-argument-parser"),
 			],
 			swiftSettings: upcomingFeatures
 		),

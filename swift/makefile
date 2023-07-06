@@ -22,4 +22,8 @@ bin/git-scripts: build
 	mkdir -p bin
 	cp `swift build --configuration release --show-bin-path`/git-scripts bin/
 
-bin: bin/resize-image bin/git-scripts
+bin/reorder-paths: build
+	mkdir -p bin
+	cp `swift build --configuration release --show-bin-path`/reorder-paths bin/
+
+bin: bin/reorder-paths bin/resize-image bin/git-scripts

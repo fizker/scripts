@@ -29,3 +29,5 @@ source $FZK_SCRIPT_FOLDER/bash/aliases.txt
 pushd $FZK_SCRIPT_FOLDER/swift
 make
 popd &> /dev/null
+
+PATH=`reorder-paths --pattern=.nvm/versions/node`
