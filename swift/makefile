@@ -14,16 +14,9 @@ endif
 clean:
 	rm -rf bin .latest-build
 
-bin/resize-image: build
-	mkdir -p bin
-	cp `swift build --configuration release --show-bin-path`/resize-image bin/
-
-bin/git-scripts: build
-	mkdir -p bin
-	cp `swift build --configuration release --show-bin-path`/git-scripts bin/
-
-bin/reorder-paths: build
-	mkdir -p bin
-	cp `swift build --configuration release --show-bin-path`/reorder-paths bin/
-
-bin: bin/reorder-paths bin/resize-image bin/git-scripts
+bin:
+	@mkdir -p bin
+	@path=`swift build --configuration release --show-bin-path`; \
+	cp "$$path"/resize-image bin/ ;\
+	cp "$$path"/git-scripts bin/ ;\
+	cp "$$path"/reorder-paths bin/ ;\
