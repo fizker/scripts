@@ -6,8 +6,8 @@ export function findStartingSpaceCount(str) {
 }
 
 class ExecError extends Error {
-	constructor(err, stdout, stderr) {
-		super(stderr)
+	constructor(command, err, stdout, stderr) {
+		super(`'${command}' failed:\n${stderr}`)
 
 		this.error = err
 		this.stdout = stdout
@@ -20,7 +20,7 @@ export function exec(command, options) {
 	return new Promise((resolve, reject) => {
 		child_process.exec(command, options, (err, stdout, stderr) => {
 			if(err) {
-				reject(new ExecError(err, stdout, stderr))
+				reject(new ExecError(command, err, stdout, stderr))
 			} else {
 				resolve({ stdout, stderr })
 			}
@@ -79,12 +79,29 @@ export async function getDefaultBranch() {
 	return mainBranch.trim().slice(remote.length + 1)
 }
 
-export async function getRemotes() {
+export async function getRemotes(includeURL = false) {
 	const command = "git remote"
 	const { stdout } = await exec(command)
-	return stdout
+	const remoteNames = stdout
 		.split("\n")
 		.filter(Boolean)
+
+	const allRemotes = await Promise.all(remoteNames.map(async (name) => {
+		try {
+			const url = await exec(`git remote get-url '${name}'`)
+			return { name, url: url.stdout.trim() }
+		} catch(e) {
+			// If there is no actual remote, this throws
+			return null
+		}
+	}))
+	const remotes = allRemotes.filter(Boolean)
+
+	if(includeURL) {
+		return remotes
+	} else {
+		return remotes.map(x => x.name)
+	}
 }
 
 export async function getRemoteBranches(remote) {
