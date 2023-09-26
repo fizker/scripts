@@ -1,0 +1,37 @@
+#!/bin/sh
+
+output=$1
+password=$2
+expiration=$3
+
+if [ "$password" == "" ];
+then
+	password=verysecret
+fi
+
+four_years_in_days=1460
+
+if [ "$expiration" == "" ];
+then
+	expiration=$four_years_in_days
+fi
+
+key=key
+cert=cert
+
+openssl req \
+	-x509 \
+	-sha256 \
+	-nodes \
+	-days $expiration \
+	-newkey rsa:4096 \
+	-keyout $key \
+	-out $cert
+
+openssl pkcs12 \
+	-export \
+	-out $output \
+	-inkey $key \
+	-in $cert
+
+rm $key $cert
