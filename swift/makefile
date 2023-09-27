@@ -14,7 +14,7 @@ endif
 clean:
 	rm -rf bin .latest-build
 
-bin:
+bin: build
 	@mkdir -p bin
 	@path=`swift build --configuration release --show-bin-path`; \
 	cp "$$path"/resize-image bin/ ;\
