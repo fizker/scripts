@@ -29,6 +29,7 @@ openssl req \
 	-out $cert
 
 openssl pkcs12 \
+	-passout "pass:$password" \
 	-export \
 	-out $output \
 	-inkey $key \
