@@ -56,7 +56,7 @@ export async function getBranchList(remote = null) {
 
 export async function deleteBranch(branch) {
 	try {
-		await exec(`git branch -d ${branch}`)
+		await exec(`git branch -d "${branch.replace(/"/g, "\\\"")}"`)
 	} catch(err) {
 		if(err.message.includes('not fully merged')) {
 			throw new NotFullyMergedError(err.message)
