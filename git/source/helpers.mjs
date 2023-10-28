@@ -71,9 +71,19 @@ export async function getDefaultBranch() {
 	const allRemoteBranches = await getBranchList(remote)
 	const head = allRemoteBranches.find(x => x.name.startsWith(`${remote}/HEAD`))
 	if(head == null) {
+		try {
 		const remoteInfo = await getRemoteBranches(remote)
-		// We might not have an origin. Assume main in this case
-		return remoteInfo?.default ?? "main"
+			// We might not have an origin. Assume main in this case
+			return remoteInfo?.default ?? "main"
+		} catch(e) {
+			// This throws if there is no internet. Assume main in this case
+			if(e.message.includes("Could not read from remote repo")) {
+				console.log("Could not read from remote repo. Assuming main is default branch")
+				return "main"
+			}
+
+			throw e
+		}
 	}
 	const [ , mainBranch ] = head.name.split("->")
 	return mainBranch.trim().slice(remote.length + 1)
