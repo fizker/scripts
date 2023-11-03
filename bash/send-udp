@@ -1,0 +1,15 @@
+#!/bin/bash
+
+host=$1
+port=$2
+
+if [ "$host" == '' ] || [ "$port" == '' ] || [ "$3" == ''  ]; then
+	echo 'Usage: send-udp <host> <port> <message...>'
+	exit 1
+fi
+
+if [ "$host" == 'localhost' ]; then
+	host=127.0.0.1
+fi
+
+echo -n "${@: 3}" > /dev/udp/"$host"/$port
