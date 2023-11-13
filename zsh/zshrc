@@ -9,6 +9,7 @@ then
 
 	if [[ ! -a /usr/local/bin/node ]]; then
 		echo 'Creating /usr/local/bin/node'
+		sudo mkdir -p /usr/local/bin
 		sudo ln -fs ~/bin/node /usr/local/bin/node
 		sudo ln -fs ~/bin/npm /usr/local/bin/npm
 	fi
