@@ -24,6 +24,10 @@ extension FileManager {
 		return (exists, exists ? b.pointee.boolValue : false)
 	}
 
+	public func isDirectory(atPath path: String) -> Bool {
+		fileStatus(atPath: path).isDirectory
+	}
+
 	func isExecutableFile(at url: URL) -> Bool {
 		guard url.isFileURL
 		else { return false }
@@ -31,5 +35,20 @@ extension FileManager {
 		let path = path(for: url)
 
 		return isExecutableFile(atPath: path)
+	}
+
+	public func contentsOfDir(atPath path: String, isRecursive: Bool) throws -> [String] {
+		guard isRecursive
+		else { return try contentsOfDirectory(atPath: path) }
+
+		var contents = [String]()
+		for subpath in try contentsOfDirectory(atPath: path) {
+			let path = path+"/"+subpath
+			contents.append(path)
+			if isDirectory(atPath: path) {
+				contents.append(contentsOf: try contentsOfDir(atPath: path, isRecursive: true))
+			}
+		}
+		return contents
 	}
 }
