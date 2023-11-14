@@ -70,12 +70,13 @@ struct UpdateFileAdded: ParsableCommand {
 		abstract: "Updates the dateAdded property of files.",
 		usage: """
 		update <file> <dateAdded>
-		update <json file>
+		update <json file> [--fail-if-any-not-found|-f]
 		""",
 		discussion: """
 		If <dateAdded> is included, <file> will be updated to match.
 
 		If <dateAdded> is omitted, <file> will be expected to be a JSON file containing an array of items formatted like \(FileWithDateAdded.example).
+		Per default, missing files are noted, but not treated as an error. The flag [--fail-if-any-not-found] treats this as an error. Note that any files already updated are not reverted.
 		"""
 	)
 
@@ -88,6 +89,12 @@ struct UpdateFileAdded: ParsableCommand {
 		return try decoder.decode(Date.self, from: "\"\($0)\"".data(using: .utf8)!)
 	})
 	var dateAdded: Date?
+
+	@Flag(
+		name: [ .customLong("fail-if-any-not-found"), .customShort("f") ],
+		help: "If set, the program exits with an error if any of the files are missing."
+	)
+	var shouldFailIfFileIsMissing = false
 
 	func run() throws {
 		let files: [FileWithDateAdded]
@@ -107,8 +114,22 @@ struct UpdateFileAdded: ParsableCommand {
 			}
 		}
 
+		var hadError = false
 		for file in files {
-			try updateDateAdded(file: file.path, dateAdded: file.dateAdded)
+			do {
+				try updateDateAdded(file: file.path, dateAdded: file.dateAdded)
+			} catch {
+				guard dateAdded == nil && !shouldFailIfFileIsMissing
+				else { throw error }
+
+				hadError = true
+
+				print(" - \(file.path) was missing.")
+			}
+		}
+
+		if hadError {
+			print("All other files updated.")
 		}
 	}
 }
