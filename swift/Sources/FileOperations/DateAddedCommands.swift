@@ -10,7 +10,7 @@ struct FileWithDateAdded: Codable {
 	var path: String
 	var dateAdded: Date
 
-	static let example = #"{"path":"some/file","dateAdded":"2023-10-11T12:34:45Z"}"#
+	static let example = #"{ "path": "some/file", "dateAdded": "2023-10-11T12:34:45Z" }"#
 }
 
 @main
@@ -65,12 +65,24 @@ struct GetFileAdded: ParsableCommand {
 
 
 struct UpdateFileAdded: ParsableCommand {
-	static var configuration = CommandConfiguration(commandName: "update")
+	static var configuration = CommandConfiguration(
+		commandName: "update",
+		abstract: "Updates the dateAdded property of files.",
+		usage: """
+		update <file> <dateAdded>
+		update <json file>
+		""",
+		discussion: """
+		If <dateAdded> is included, <file> will be updated to match.
 
-	@Argument
+		If <dateAdded> is omitted, <file> will be expected to be a JSON file containing an array of items formatted like \(FileWithDateAdded.example).
+		"""
+	)
+
+	@Argument(help: "A valid file path.")
 	var file: String
 
-	@Argument(transform: {
+	@Argument(help: "The date to set for the file. This must be in ISO8601 format (YYYY-MM-DDTHH:MM:SSZ).", transform: {
 		let decoder = JSONDecoder()
 		decoder.dateDecodingStrategy = .iso8601
 		return try decoder.decode(Date.self, from: "\"\($0)\"".data(using: .utf8)!)
