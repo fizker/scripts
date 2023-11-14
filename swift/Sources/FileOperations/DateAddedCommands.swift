@@ -15,10 +15,13 @@ struct FileWithDateAdded: Codable {
 
 @main
 struct StartCommand: ParsableCommand {
-	static var configuration: CommandConfiguration = .init(subcommands: [
-		GetFileAdded.self,
-		UpdateFileAdded.self,
-	])
+	static var configuration: CommandConfiguration = .init(
+		commandName: "file-op",
+		subcommands: [
+			GetFileAdded.self,
+			UpdateFileAdded.self,
+		]
+	)
 }
 
 struct GetFileAdded: ParsableCommand {
