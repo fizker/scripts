@@ -19,8 +19,9 @@ bin: build
 ifneq ($(current_sha), $(latest_build))
 	@mkdir -p bin
 	@path=`swift build --configuration release --show-bin-path`; \
-	cp "$$path"/resize-image bin/ ;\
+	cp "$$path"/file-op bin/ ;\
 	cp "$$path"/git-scripts bin/ ;\
 	cp "$$path"/reorder-paths bin/ ;\
+	cp "$$path"/resize-image bin/ ;\
 
 endif
