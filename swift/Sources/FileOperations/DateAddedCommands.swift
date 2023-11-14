@@ -9,6 +9,8 @@ enum FileOperationError: Error {
 struct FileWithDateAdded: Codable {
 	var path: String
 	var dateAdded: Date
+
+	static let example = #"{"path":"some/file","dateAdded":"2023-10-11T12:34:45Z"}"#
 }
 
 @main
@@ -73,9 +75,28 @@ struct UpdateFileAdded: ParsableCommand {
 		decoder.dateDecodingStrategy = .iso8601
 		return try decoder.decode(Date.self, from: "\"\($0)\"".data(using: .utf8)!)
 	})
-	var date: Date
+	var dateAdded: Date?
 
 	func run() throws {
-		try updateDateAdded(file: file, dateAdded: date)
+		let files: [FileWithDateAdded]
+
+		if let dateAdded {
+			files = [.init(path: file, dateAdded: dateAdded)]
+		} else {
+			let decoder = JSONDecoder()
+			decoder.dateDecodingStrategy = .iso8601
+			do {
+				let data = try Data(contentsOf: URL(filePath: file))
+				files = try decoder.decode([FileWithDateAdded].self, from: data)
+			} catch {
+				print("Error: The provided file was not a valid list of paths and dates. The expected format is [\(FileWithDateAdded.example),...].")
+				print(StartCommand.helpMessage(for: UpdateFileAdded.self))
+				throw ExitCode.validationFailure
+			}
+		}
+
+		for file in files {
+			try updateDateAdded(file: file.path, dateAdded: file.dateAdded)
+		}
 	}
 }
