@@ -18,6 +18,10 @@ let package = Package(
 	],
 	products: [
 		.executable(
+			name: "file-op",
+			targets: ["FileOperations"]
+		),
+		.executable(
 			name: "git-scripts",
 			targets: ["GitScripts"]
 		),
@@ -34,6 +38,15 @@ let package = Package(
 		.package(url: "https://github.com/apple/swift-argument-parser.git", .upToNextMajor(from: "1.1.2")),
 	],
 	targets: [
+		.executableTarget(
+			name: "FileOperations",
+			dependencies: [
+				.product(name: "ArgumentParser", package: "swift-argument-parser"),
+				"Shared",
+				"CFunctions",
+			],
+			swiftSettings: upcomingFeatures
+		),
 		.executableTarget(
 			name: "GitScripts",
 			dependencies: [
@@ -60,6 +73,7 @@ let package = Package(
 			name: "Shared",
 			swiftSettings: upcomingFeatures
 		),
+		.target(name: "CFunctions"),
 		.testTarget(
 			name: "SharedTests",
 			dependencies: ["Shared"],
