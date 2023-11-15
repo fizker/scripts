@@ -32,3 +32,8 @@ make
 popd &> /dev/null
 
 PATH=`reorder-paths --pattern=.nvm/versions/node`
+
+if [ -e ~/.aliases ];
+then
+	source ~/.aliases
+fi
