@@ -62,7 +62,7 @@ struct GetFileAdded: ParsableCommand {
 		guard fm.fileExists(atPath: path)
 		else { throw FileOperationError.notFound(path) }
 
-		return try dateAdded(file: file)
+		return try dateAdded(file: path)
 	}
 }
 
