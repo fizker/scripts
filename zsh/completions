@@ -9,3 +9,16 @@ mkdir -p ~/.completions
 # Generate and include Swift completions
 swift package completion-tool generate-zsh-script > ~/.completions/_swift
 source ~/.completions/_swift
+
+# zsh parameter completion for the dotnet CLI
+
+if which dotnet &> /dev/null
+then
+	_dotnet_zsh_complete() {
+		local completions=("$(dotnet complete "$words")")
+
+		reply=( "${(ps:\n:)completions}" )
+	}
+
+	compctl -K _dotnet_zsh_complete dotnet
+fi
