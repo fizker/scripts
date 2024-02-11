@@ -86,11 +86,14 @@ struct UpdateFileAdded: ParsableCommand {
 	@Argument(help: "A valid file path.")
 	var file: String
 
-	@Argument(help: "The date to set for the file. This must be in ISO8601 format (YYYY-MM-DDTHH:MM:SSZ).", transform: {
-		let decoder = JSONDecoder()
-		decoder.dateDecodingStrategy = .iso8601
-		return try decoder.decode(Date.self, from: "\"\($0)\"".data(using: .utf8)!)
-	})
+	@Argument(
+		help: "The date to set for the file. This must be in ISO8601 format (YYYY-MM-DDTHH:MM:SSZ).",
+		transform: { input -> Date in
+			let decoder = JSONDecoder()
+			decoder.dateDecodingStrategy = .iso8601
+			return try decoder.decode(Date.self, from: "\"\(input)\"".data(using: .utf8)!)
+		}
+	)
 	var dateAdded: Date?
 
 	@Flag(

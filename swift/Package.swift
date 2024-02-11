@@ -35,7 +35,7 @@ let package = Package(
 		),
 	],
 	dependencies: [
-		.package(url: "https://github.com/apple/swift-argument-parser.git", .upToNextMajor(from: "1.1.2")),
+		.package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.3.0"),
 	],
 	targets: [
 		.executableTarget(
