@@ -4,6 +4,7 @@
 
 defaults write com.apple.screencapture disable-shadow -bool true
 defaults write com.apple.dock minimize-to-application -bool true
+defaults write com.apple.dock slow-motion-allowed -bool true
 defaults write com.apple.messageshelper.MessageController SOInputLineSettings -dict-add "automaticEmojiSubstitutionEnablediMessage" -bool false
 defaults write com.apple.Finder NSToolbarTitleViewRolloverDelay -float 0
 
