@@ -85,7 +85,7 @@ fi
 if git-install-hooks --status --silent; then
 	hooks_status=''
 else
-	hooks_status=' %F{red}Issue with hooks - run `git-install-hooks`%f'
+	hooks_status=' %F{red}Issue with hooks - run `git-install-hooks .`%f'
 fi
 
 /bin/echo -n ' [%F{'$dirty_color'}'$branch'%f'`remote_status`']'$hooks_status
