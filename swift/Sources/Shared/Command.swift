@@ -72,18 +72,18 @@ public struct Command: Sendable {
 
 			let stdout = Pipe()
 			process.standardOutput = stdout
-			let stdoutData = CachedStreamReader(content: AsyncStream(pipe: stdout))
+			let stdoutData = AsyncStream(pipe: stdout)
 
 			let stderr = Pipe()
 			process.standardError = stderr
-			let stderrData = CachedStreamReader(content: AsyncStream(pipe: stderr))
+			let stderrData = AsyncStream(pipe: stderr)
 
 			try process.run()
 			process.waitUntilExit()
 
 			let exitCode = process.terminationStatus
 
-			return Result(exitCode: Int(exitCode), stdout: await stdoutData.data, stderr: await stderrData.data)
+			return Result(exitCode: Int(exitCode), stdout: await consume(stream: stdoutData), stderr: await consume(stream: stderrData))
 		}.result.get()
 	}
 
