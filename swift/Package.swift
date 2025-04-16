@@ -3,12 +3,8 @@
 import PackageDescription
 
 let upcomingFeatures: [SwiftSetting] = [
-	.enableUpcomingFeature("ConciseMagicFile"),
-	.enableUpcomingFeature("ForwardTrailingClosures"),
 	.enableUpcomingFeature("ExistentialAny"),
 	.enableUpcomingFeature("StrictConcurrency"),
-	.enableUpcomingFeature("ImplicitOpenExistentials"),
-	.enableUpcomingFeature("BareSlashRegexLiterals"),
 ]
 
 let package = Package(
