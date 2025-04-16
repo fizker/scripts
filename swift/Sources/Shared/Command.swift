@@ -1,6 +1,6 @@
 import Foundation
 
-public struct Command {
+public struct Command: Sendable {
 	public let command: URL
 	public let workingDirectory: URL
 	public let exists: Bool
@@ -72,22 +72,22 @@ public struct Command {
 
 			let stdout = Pipe()
 			process.standardOutput = stdout
-			let stdoutData = CachedStreamReader(content: AsyncStream(pipe: stdout))
+			let stdoutData = AsyncStream(pipe: stdout)
 
 			let stderr = Pipe()
 			process.standardError = stderr
-			let stderrData = CachedStreamReader(content: AsyncStream(pipe: stderr))
+			let stderrData = AsyncStream(pipe: stderr)
 
 			try process.run()
 			process.waitUntilExit()
 
 			let exitCode = process.terminationStatus
 
-			return Result(exitCode: Int(exitCode), stdout: await stdoutData.data, stderr: await stderrData.data)
+			return Result(exitCode: Int(exitCode), stdout: await consume(stream: stdoutData), stderr: await consume(stream: stderrData))
 		}.result.get()
 	}
 
-	public struct Result {
+	public struct Result: Sendable {
 		public var exitCode: Int
 		public var stdout: Data
 		public var stderr: Data

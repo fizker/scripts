@@ -15,7 +15,7 @@ struct FileWithDateAdded: Codable {
 
 @main
 struct StartCommand: ParsableCommand {
-	static var configuration: CommandConfiguration = .init(
+	static let configuration: CommandConfiguration = .init(
 		commandName: "file-op",
 		subcommands: [
 			GetFileAdded.self,
@@ -30,7 +30,7 @@ struct GetFileAdded: ParsableCommand {
 		case isRecursive
 	}
 
-	static var configuration = CommandConfiguration(commandName: "read")
+	static let configuration = CommandConfiguration(commandName: "read")
 
 	@Argument
 	var file: String
@@ -68,7 +68,7 @@ struct GetFileAdded: ParsableCommand {
 
 
 struct UpdateFileAdded: ParsableCommand {
-	static var configuration = CommandConfiguration(
+	static let configuration = CommandConfiguration(
 		commandName: "update",
 		abstract: "Updates the dateAdded property of files.",
 		usage: """

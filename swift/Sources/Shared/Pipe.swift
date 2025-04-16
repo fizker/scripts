@@ -1,24 +1,11 @@
 import Foundation
 
-public class CachedStreamReader {
-	private var _data: Data = .init()
-	var data: Data {
-		get async {
-			_ = await finishedTask.result
-			return _data
-		}
+func consume(stream: AsyncStream<Data>) async -> Data {
+	var data = Data()
+	for await chunk in stream {
+		data.append(chunk)
 	}
-	var isFinished = false
-	private var finishedTask: Task<(), Never>!
-
-	init(content: AsyncStream<Data>) {
-		finishedTask = Task {
-			for await data in content {
-				self._data.append(data)
-			}
-			self.isFinished = true
-		}
-	}
+	return data
 }
 
 extension AsyncStream where Element == Data {
