@@ -1,6 +1,6 @@
 import Foundation
 
-public struct Command {
+public struct Command: Sendable {
 	public let command: URL
 	public let workingDirectory: URL
 	public let exists: Bool
@@ -87,7 +87,7 @@ public struct Command {
 		}.result.get()
 	}
 
-	public struct Result {
+	public struct Result: Sendable {
 		public var exitCode: Int
 		public var stdout: Data
 		public var stderr: Data
