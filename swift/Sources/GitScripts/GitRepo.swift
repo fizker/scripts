@@ -1,5 +1,6 @@
 import Shared
 
+nonisolated(unsafe) // regex literals are always safe, but compiler does not know
 let noRepoRegex = /not a .*repo/
 
 struct GitRepo {
