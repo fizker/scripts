@@ -7,14 +7,12 @@ int foo_bar(int input) {
 	return input + 3;
 }
 
-/*
- * Get kMDItemDateAdded of path.
- *
- * Returns:
- *   • 0 on success
- *   • 1 if a system call failed: check errno
- *   • 2 if something else went wrong
- */
+/// Get kMDItemDateAdded of path.
+///
+/// - Returns:
+///   - 0 on success
+///   - 1 if a system call failed: check errno
+///   - 2 if something else went wrong
 int get_date_added(const char* path, struct timespec * out) {
     attrgroup_t request_attrs = ATTR_CMN_RETURNED_ATTRS | ATTR_CMN_ADDEDTIME;
 
@@ -51,13 +49,11 @@ int get_date_added(const char* path, struct timespec * out) {
     return 0;
 }
 
-/*
- * Set kMDItemDateAdded of path.
- *
- * Returns:
- *   • 0 on success
- *   • 1 if a system call failed: check errno
- */
+/// Set kMDItemDateAdded of path.
+///
+/// - Returns:
+///   - 0 on success
+///   - 1 if a system call failed: check errno
 int set_date_added(const char* path, struct timespec in) {
     attrgroup_t request_attrs = ATTR_CMN_ADDEDTIME;
 
