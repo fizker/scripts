@@ -6,6 +6,9 @@ let upcomingFeatures: [SwiftSetting] = [
 	.enableUpcomingFeature("ExistentialAny"),
 	.enableUpcomingFeature("StrictConcurrency"),
 ]
+let settings = upcomingFeatures + [
+	.defaultIsolation(MainActor.self),
+]
 
 let package = Package(
 	name: "swift",
@@ -41,7 +44,7 @@ let package = Package(
 				"Shared",
 				"CFunctions",
 			],
-			swiftSettings: upcomingFeatures
+			swiftSettings: settings,
 		),
 		.executableTarget(
 			name: "GitScripts",
@@ -49,25 +52,25 @@ let package = Package(
 				.product(name: "ArgumentParser", package: "swift-argument-parser"),
 				"Shared",
 			],
-			swiftSettings: upcomingFeatures
+			swiftSettings: settings,
 		),
 		.executableTarget(
 			name: "ReorderPaths",
 			dependencies: [
 				.product(name: "ArgumentParser", package: "swift-argument-parser"),
 			],
-			swiftSettings: upcomingFeatures
+			swiftSettings: settings,
 		),
 		.executableTarget(
 			name: "ResizeImage",
 			dependencies: [
 				.product(name: "ArgumentParser", package: "swift-argument-parser"),
 			],
-			swiftSettings: upcomingFeatures
+			swiftSettings: settings,
 		),
 		.target(
 			name: "Shared",
-			swiftSettings: upcomingFeatures
+			swiftSettings: settings,
 		),
 		.target(name: "CFunctions"),
 		.testTarget(
@@ -76,7 +79,7 @@ let package = Package(
 			resources: [
 				.copy("BigCatTarget"),
 			],
-			swiftSettings: upcomingFeatures
+			swiftSettings: settings,
 		),
 	]
 )
