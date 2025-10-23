@@ -7,7 +7,7 @@ let upcomingFeatures: [SwiftSetting] = [
 	.enableUpcomingFeature("StrictConcurrency"),
 ]
 let settings = upcomingFeatures + [
-	.defaultIsolation(MainActor.self),
+//	.defaultIsolation(MainActor.self),
 ]
 
 let package = Package(
