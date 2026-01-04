@@ -20,23 +20,7 @@ struct TestAllCommand: AsyncParsableCommand {
 	func run() async throws {
 		var errors: [String] = []
 
-		var commands = commands
-
-		if let hookName = hookName {
-			let git = Command("git")
-			let result = try await git.execute(arguments: ["config", "--get-all", "fizker.hooksPath"])
-			if result.exitCode == 0 {
-				let raw = result.stdout
-				if let str = String(data: raw, encoding: .utf8) {
-					let items = str
-						.components(separatedBy: .newlines)
-						.joined(separator: ":")
-						.components(separatedBy: CharacterSet(charactersIn: ":"))
-
-					commands.append(contentsOf: items.map { "\($0)/\(hookName)" })
-				}
-			}
-		}
+		let commands = commands + (try await commandsFromGitConfig())
 
 		for path in commands where !path.isEmpty {
 			let command = Command(path)
@@ -59,5 +43,26 @@ struct TestAllCommand: AsyncParsableCommand {
 
 		print(errors.joined(separator: "\n"))
 		Foundation.exit(1)
+	}
+
+	func commandsFromGitConfig() async throws -> [String] {
+		guard let hookName
+		else { return [] }
+
+		let git = Command("git")
+		let result = try await git.execute(arguments: ["config", "--get-all", "fizker.hooksPath"])
+		guard result.exitCode == 0
+		else { return [] }
+
+		let raw = result.stdout
+		guard let str = String(data: raw, encoding: .utf8)
+		else { return [] }
+
+		let items = str
+			.components(separatedBy: .newlines)
+			.joined(separator: ":")
+			.components(separatedBy: CharacterSet(charactersIn: ":"))
+
+		return items.map { "\($0)/\(hookName)" }
 	}
 }
