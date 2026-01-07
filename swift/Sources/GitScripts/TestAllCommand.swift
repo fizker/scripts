@@ -18,7 +18,7 @@ struct TestAllCommand: AsyncParsableCommand {
 	var arguments: [String] = []
 
 	func run() async throws {
-		var errors: [String] = []
+		var allPassed = true
 
 		let commands = commands + (try await commandsFromGitConfig())
 
@@ -26,23 +26,15 @@ struct TestAllCommand: AsyncParsableCommand {
 			let command = Command(path)
 
 			if command.exists {
-				let result = try await command.execute(arguments: arguments)
-				if result.exitCode != 0 {
-					var data = result.stderr
-					if data.isEmpty {
-						data = result.stdout
-					}
-					let message = String(data: data, encoding: .utf8)!
-					errors.append(message.trimmingCharacters(in: .whitespacesAndNewlines))
+				let exitCode = try await command.exitCode(executingWithArguments: arguments)
+				if exitCode != 0 {
+					allPassed = false
 				}
 			}
 		}
 
-		guard !errors.isEmpty
-		else { return }
-
-		print(errors.joined(separator: "\n"))
-		Foundation.exit(1)
+		guard allPassed
+		else { Foundation.exit(1) }
 	}
 
 	func commandsFromGitConfig() async throws -> [String] {
