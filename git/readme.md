@@ -21,3 +21,10 @@ Repo-specific hooks
 Hooks installed in `.git/hooks` will automatically be executed after the global scripts.
 
 Hooks that are installed using `git config core.hooksPath` will be registered when `git install-hooks <local repo>` is executed, and also run automatically after the global hooks.
+
+
+Other useful git commands
+-------------------------
+
+- `git config --local fizker.hooksPath <local-path>` - Sets up whatever hooks are in `local-path` to be evaluated as appropriate.
+- `git config --local include.path ../.gitconfig` - Sets up `../.gitconfig` to be included as a complement to `.git/config`. The path is relative to `.git/config`.
