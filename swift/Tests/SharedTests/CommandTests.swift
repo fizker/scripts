@@ -1,27 +1,22 @@
-import XCTest
+import Foundation
+import Testing
 import Shared
 
-final class CommandTests: XCTestCase {
-	func test__execute__catLargeFile__entireFileContentIsReturned() async throws {
-		let exp = XCTestExpectation(description: "Loading file")
-		exp.expectedFulfillmentCount = 1
-		Task {
-			let command = Command("/bin/cat")
-			guard let file = Bundle.module.path(forResource: "BigCatTarget", ofType: nil)
-			else {
-				XCTFail("Could not load file")
-				exp.fulfill()
-				return
-			}
-			let result = try await command.execute(arguments: [ file ])
-			exp.fulfill()
+struct CommandTests {
+	enum BundleError: Error {
+		case couldNotFindResource
+	}
 
-			let fileContent = FileManager.default.contents(atPath: file)
+	@Test
+	func execute__catLargeFile__entireFileContentIsReturned() async throws {
+		guard let file = Bundle.module.path(forResource: "BigCatTarget", ofType: nil)
+		else { throw BundleError.couldNotFindResource }
+		let fileContent = FileManager.default.contents(atPath: file)
 
-			XCTAssertEqual(result.stdout, fileContent)
-			XCTAssertTrue(result.stderr.isEmpty)
-		}
+		let command = Command("/bin/cat")
+		let result = try await command.execute(arguments: [ file ])
 
-		await fulfillment(of: [exp], timeout: 1)
+		#expect(result.stdout == fileContent)
+		#expect(result.stderr.isEmpty)
 	}
 }

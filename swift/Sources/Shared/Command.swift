@@ -5,11 +5,18 @@ public struct Command: Sendable {
 	public let workingDirectory: URL
 	public let exists: Bool
 
+	/// The current working directory of the process.
 	public static var currentWorkingDirectory: URL {
 		Process().currentDirectoryURL!
 	}
 
-	public init(_ path: String, workingDirectory: URL = Command.currentWorkingDirectory) {
+	/// - parameters:
+	///   - path: The path to the command. If the path is relative, it will be considered from the ``workingDirectory``.
+	///   - workingDirectory: The working directory that the command should be executed from.
+	public init(
+		_ path: String,
+		workingDirectory: URL = Command.currentWorkingDirectory,
+	) {
 		self.workingDirectory = workingDirectory
 
 		let manager = FileManager.default
@@ -61,6 +68,25 @@ public struct Command: Sendable {
 	}
 
 	@discardableResult
+	public func exitCode(executingWithArguments arguments: [String] = []) async throws -> Int {
+		try await Task {
+			let process = Process()
+			process.environment = ProcessInfo.processInfo.environment
+			process.currentDirectoryURL = workingDirectory
+
+			process.executableURL = command
+			process.arguments = arguments
+
+			try process.run()
+			process.waitUntilExit()
+
+			let exitCode = process.terminationStatus
+
+			return Int(exitCode)
+		}.result.get()
+	}
+
+	@discardableResult
 	public func execute(arguments: [String] = []) async throws -> Result {
 		try await Task {
 			let process = Process()
@@ -83,7 +109,13 @@ public struct Command: Sendable {
 
 			let exitCode = process.terminationStatus
 
-			return Result(exitCode: Int(exitCode), stdout: await consume(stream: stdoutData), stderr: await consume(stream: stderrData))
+			return Result(
+				exitCode: Int(
+					exitCode
+				),
+				stdout: await consume(stream: stdoutData),
+				stderr: await consume(stream: stderrData),
+			)
 		}.result.get()
 	}
 
