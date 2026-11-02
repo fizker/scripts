@@ -7,6 +7,15 @@ struct PromptSummaryCommand: AsyncParsableCommand {
 	)
 
 	func run() async throws {
-		print("Foo")
+		let repo: GitRepo
+		do {
+			repo = try await GitRepo()
+		} catch GitRepo.Error.notRepo {
+			return
+		}
+
+		let branch = try await repo.currentBranch()
+
+		print(" [\(branch, default: "")]")
 	}
 }

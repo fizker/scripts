@@ -27,4 +27,12 @@ struct GitRepo {
 		}
 		root = String(data: result.stdout, encoding: .utf8)!
 	}
+
+	/// Reads the name of the current branch, or `nil` if currently detached.
+	/// - returns: The name of the current branch, or `nil` if currently detached.
+	func currentBranch() async throws -> String? {
+		let result = try await git.execute(arguments: [ "branch", "--show-current" ])
+		let branch = String(data: result.stdout, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+		return branch.isEmpty ? nil : branch
+	}
 }
