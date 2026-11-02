@@ -36,50 +36,9 @@ struct GitRepo {
 		return branch.isEmpty ? nil : branch
 	}
 
-	enum StatusSummary {
-		/// There is neither dirty nor untracked changes.
-		case clean
-		/// There are uncommitted changes.
-		case dirty
-		/// If there are untracked files, but the checkout is otherwise clean.
-		case untracked
-	}
-
-	func statusSummary() async throws -> StatusSummary {
-		var stderr = FileHandleTextOutputStream(handle: .standardError)
-
-		let result = try await git.execute(arguments: [ "status", "--porcelain" ])
+	func status() async throws -> GitStatus {
+		let result = try await git.execute(arguments: [ "status", "--branch", "--porcelain" ])
 		let status = String(data: result.stdout, encoding: .utf8) ?? ""
-		let lines = status
-			.components(separatedBy: .newlines)
-			.map { $0.trimmingCharacters(in: .whitespaces) }
-			.filter { !$0.isEmpty }
-
-		var hasUntracked = false
-		loop: for line in lines {
-			switch line.first {
-			case "A": // added
-				return .dirty
-			case "C": // copied
-				return .dirty
-			case "D": // deleted
-				return .dirty
-			case "M": // modified
-				return .dirty
-			case "R": // renamed
-				return .dirty
-			case "U": // updated but unmerged (merge conflict)
-				return .dirty
-			case "?": // untracked
-				hasUntracked = true
-			case "!": // ignored
-				continue loop
-			default:
-				print("Unknown status marker: \(line)", to: &stderr)
-				continue loop
-			}
-		}
-
-		return hasUntracked ? .untracked : .clean
+		return try GitStatus(status: status)
 	}
 }

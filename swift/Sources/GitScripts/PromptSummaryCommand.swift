@@ -15,10 +15,26 @@ struct PromptSummaryCommand: AsyncParsableCommand {
 			return
 		}
 
-		let status = try await repo.statusSummary()
+		let status = try await repo.status()
 		let branch = try await repo.currentBranch()?
-			.color(status == .dirty ? .red : .green)
+			.color(isDirty(status) ? .red : .green)
 
 		print(" [\(branch, default: "")]")
+	}
+
+	func isDirty(_ status: GitStatus) -> Bool {
+		var stderr = FileHandleTextOutputStream(handle: .standardError)
+
+		for file in status.files {
+			switch file.status {
+			case .dirty:
+				return true
+			case .clean, .ignored, .untracked:
+				break
+			case .unknown(let code):
+				print("Unknown status marker: \(code) \(file.path)", to: &stderr)
+			}
+		}
+		return false
 	}
 }
