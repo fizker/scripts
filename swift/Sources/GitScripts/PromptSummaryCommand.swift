@@ -1,4 +1,5 @@
 import ArgumentParser
+import Shared
 
 struct PromptSummaryCommand: AsyncParsableCommand {
 	static let configuration = CommandConfiguration(
@@ -14,7 +15,9 @@ struct PromptSummaryCommand: AsyncParsableCommand {
 			return
 		}
 
-		let branch = try await repo.currentBranch()
+		let status = try await repo.statusSummary()
+		let branch = try await repo.currentBranch()?
+			.color(status == .dirty ? .red : .green)
 
 		print(" [\(branch, default: "")]")
 	}
