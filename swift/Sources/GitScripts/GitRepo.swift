@@ -18,8 +18,7 @@ struct GitRepo {
 		else {
 			let message = String(data: result.stderr, encoding: .utf8)!
 
-			let match = try noRepoRegex.wholeMatch(in: message)
-			if match != nil {
+			if message.contains(noRepoRegex) {
 				throw Error.notRepo
 			}
 
