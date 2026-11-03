@@ -57,22 +57,22 @@ extension GitStatus {
 			let pathStart = line.index(codeEnd, offsetBy: 2)
 
 			let code = line[codeStart...codeEnd]
-			let status: FileStatus = switch code {
-			case " A": // added
+			let status: FileStatus = switch code.trimmingCharacters(in: .whitespaces).first {
+			case "A": // added
 				.dirty
-			case " C": // copied
+			case "C": // copied
 				.dirty
-			case " D": // deleted
+			case "D": // deleted
 				.dirty
-			case " M": // modified
+			case "M": // modified
 				.dirty
-			case " R": // renamed
+			case "R": // renamed
 				.dirty
-			case " U": // updated but unmerged (merge conflict)
+			case "U": // updated but unmerged (merge conflict)
 				.dirty
-			case "??": // untracked
+			case "?": // untracked
 				.untracked
-			case "!!": // ignored
+			case "!": // ignored
 				.ignored
 			default:
 				.unknown(String(code))
