@@ -21,7 +21,14 @@ struct PromptSummaryCommand: AsyncParsableCommand {
 			case let .named(name): name
 		}
 
-		print(" [\(branch.color(isDirty(status) ? .red : .green))]")
+		let remoteStatus = switch (status.isAhead, status.isBehind) {
+		case (false, false): ""
+		case (true, false): " ↑"
+		case (false, true): " ↓"
+		case (true, true): " ↑↓"
+		}
+
+		print(" [\(branch.color(isDirty(status) ? .red : .green))\(remoteStatus)]")
 	}
 
 	func isDirty(_ status: GitStatus) -> Bool {

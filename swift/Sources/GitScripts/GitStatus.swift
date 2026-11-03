@@ -23,6 +23,8 @@ struct GitStatus: Equatable {
 
 	var branch: Branch
 	var files: [File]
+	var isAhead: Bool
+	var isBehind: Bool
 }
 
 extension GitStatus {
@@ -38,8 +40,19 @@ extension GitStatus {
 		guard let branchLine = lines.first, branchLine.hasPrefix("## ")
 		else { throw .branchLineMissing }
 
+		isAhead = branchLine.contains(/ahead \d+/)
+		isBehind = branchLine.contains(/behind \d+/)
+
 		let branchName = branchLine.trimmingPrefix(/##\s/)
-		branch = branchName == "HEAD (no branch)" ? .detached : .named(String(branchName))
+		if branchName == "HEAD (no branch)" {
+			branch = .detached
+		} else if isAhead || isBehind {
+			let regex = /^([^.]+)\.\.\.(?:[^ ]+) \[[^\[]+\]$/
+			let match = branchName.firstMatch(of: regex)?.output.1
+			branch = .named(String(match!))
+		} else {
+			branch = .named(String(branchName))
+		}
 
 		files = lines[1...].map { line in
 			let codeStart = line.startIndex

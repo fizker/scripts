@@ -27,6 +27,8 @@ struct GitStatusTests {
 					.init(path: "foo", status: .dirty),
 					.init(path: "bar", status: .untracked),
 				],
+				isAhead: false,
+				isBehind: false,
 			)
 		)
 	}
@@ -46,6 +48,50 @@ struct GitStatusTests {
 					.init(path: "foo", status: .dirty),
 					.init(path: "bar", status: .untracked),
 				],
+				isAhead: false,
+				isBehind: false,
+			)
+		)
+	}
+
+	@Test
+	func initWithStatus__branchIsAhead__parsesAsExpected() async throws {
+		let status = try GitStatus(status: "## main...origin/main [ahead 1]")
+
+		#expect(
+			status == GitStatus(
+				branch: .named("main"),
+				files: [],
+				isAhead: true,
+				isBehind: false,
+			)
+		)
+	}
+
+	@Test
+	func initWithStatus__branchIsBehind__parsesAsExpected() async throws {
+		let status = try GitStatus(status: "## main...origin/main [behind 2]")
+
+		#expect(
+			status == GitStatus(
+				branch: .named("main"),
+				files: [],
+				isAhead: false,
+				isBehind: true,
+			)
+		)
+	}
+
+	@Test
+	func initWithStatus__branchIsBothAheadAndBehind__parsesAsExpected() async throws {
+		let status = try GitStatus(status: "## main...origin/main [ahead 1, behind 2]")
+
+		#expect(
+			status == GitStatus(
+				branch: .named("main"),
+				files: [],
+				isAhead: true,
+				isBehind: true,
 			)
 		)
 	}
