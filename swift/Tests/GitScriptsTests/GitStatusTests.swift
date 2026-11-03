@@ -34,6 +34,27 @@ struct GitStatusTests {
 	}
 
 	@Test
+	func initWithStatus__branchHaveRemote_branchIsUpToDate__parsesAsExpected() async throws {
+		let status = try GitStatus(status: """
+		## branch...remoteName/remoteBranch
+		 U foo
+		?? bar
+		""")
+
+		#expect(
+			status == GitStatus(
+				branch: .named("branch"),
+				files: [
+					.init(path: "foo", status: .dirty),
+					.init(path: "bar", status: .untracked),
+				],
+				isAhead: false,
+				isBehind: false,
+			)
+		)
+	}
+
+	@Test
 	func initWithStatus__multipleFiles_detachedBranch__parsesAsExpected() async throws {
 		let status = try GitStatus(status: """
 		## HEAD (no branch)

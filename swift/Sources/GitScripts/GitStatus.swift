@@ -43,15 +43,12 @@ extension GitStatus {
 		isAhead = branchLine.contains(/ahead \d+/)
 		isBehind = branchLine.contains(/behind \d+/)
 
-		let branchName = branchLine.trimmingPrefix(/##\s/)
-		if branchName == "HEAD (no branch)" {
+		if branchLine == "## HEAD (no branch)" {
 			branch = .detached
-		} else if isAhead || isBehind {
-			let regex = /^([^.]+)\.\.\.(?:[^ ]+) \[[^\[]+\]$/
-			let match = branchName.firstMatch(of: regex)?.output.1
-			branch = .named(String(match!))
 		} else {
-			branch = .named(String(branchName))
+			let regex = /^## ([^.]+)(?:\.\.\.(?:[^ ]+)(?: \[[^\[]+\])?)?$/
+			let match = branchLine.firstMatch(of: regex)?.output.1
+			branch = .named(String(match!))
 		}
 
 		files = lines[1...].map { line in
