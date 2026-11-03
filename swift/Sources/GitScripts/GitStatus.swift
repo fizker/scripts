@@ -1,4 +1,9 @@
 struct GitStatus: Equatable {
+	enum Branch: Equatable {
+		case detached
+		case named(String)
+	}
+
 	struct File: Equatable {
 		var path: String
 		var status: FileStatus
@@ -16,6 +21,7 @@ struct GitStatus: Equatable {
 		case unknown(String)
 	}
 
+	var branch: Branch
 	var files: [File]
 }
 
@@ -29,8 +35,11 @@ extension GitStatus {
 			.components(separatedBy: .newlines)
 			.filter { !$0.isEmpty }
 
-		guard lines.first?.hasPrefix("## ") == true
+		guard let branchLine = lines.first, branchLine.hasPrefix("## ")
 		else { throw .branchLineMissing }
+
+		let branchName = branchLine.trimmingPrefix(/##\s/)
+		branch = branchName == "HEAD (no branch)" ? .detached : .named(String(branchName))
 
 		files = lines[1...].map { line in
 			let codeStart = line.startIndex

@@ -20,9 +20,33 @@ struct GitStatusTests {
 		?? bar
 		""")
 
-		#expect(status == GitStatus(files: [
-			.init(path: "foo", status: .dirty),
-			.init(path: "bar", status: .untracked),
-		]))
+		#expect(
+			status == GitStatus(
+				branch: .named("branch"),
+				files: [
+					.init(path: "foo", status: .dirty),
+					.init(path: "bar", status: .untracked),
+				],
+			)
+		)
+	}
+
+	@Test
+	func initWithStatus__multipleFiles_detachedBranch__parsesAsExpected() async throws {
+		let status = try GitStatus(status: """
+		## HEAD (no branch)
+		 U foo
+		?? bar
+		""")
+
+		#expect(
+			status == GitStatus(
+				branch: .detached,
+				files: [
+					.init(path: "foo", status: .dirty),
+					.init(path: "bar", status: .untracked),
+				],
+			)
+		)
 	}
 }

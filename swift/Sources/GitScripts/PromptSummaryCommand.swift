@@ -16,10 +16,12 @@ struct PromptSummaryCommand: AsyncParsableCommand {
 		}
 
 		let status = try await repo.status()
-		let branch = try await repo.currentBranch()?
-			.color(isDirty(status) ? .red : .green)
+		let branch = switch status.branch {
+			case .detached: "detached".italic()
+			case let .named(name): name
+		}
 
-		print(" [\(branch, default: "")]")
+		print(" [\(branch.color(isDirty(status) ? .red : .green))]")
 	}
 
 	func isDirty(_ status: GitStatus) -> Bool {
