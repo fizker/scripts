@@ -1,6 +1,7 @@
 struct GitStatus: Equatable {
 	enum Branch: Equatable {
 		case detached
+		case rebasing
 		case named(String)
 	}
 

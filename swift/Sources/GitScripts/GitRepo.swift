@@ -1,3 +1,4 @@
+import Foundation
 import Shared
 
 nonisolated(unsafe) // regex literals are always safe, but compiler does not know
@@ -29,7 +30,27 @@ struct GitRepo {
 
 	func status() async throws -> GitStatus {
 		let result = try await git.execute(arguments: [ "status", "--branch", "--porcelain" ])
-		let status = String(data: result.stdout, encoding: .utf8) ?? ""
-		return try GitStatus(status: status)
+		let unparsedStatus = String(data: result.stdout, encoding: .utf8) ?? ""
+		var status = try GitStatus(status: unparsedStatus)
+
+		if status.branch == .detached {
+			if try await doesGitDirExist("rebase-merge", "rebase-apply") {
+				status.branch = .rebasing
+			}
+		}
+
+		return status
+	}
+
+	func doesGitDirExist(_ names: String...) async throws -> Bool {
+		for name in names {
+			let result = try await git.execute(arguments: [ "rev-parse", "--git-path", name ])
+			guard let path = String(data: result.stdout, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines)
+			else { continue }
+			if FileManager.default.fileExists(atPath: path) {
+				return true
+			}
+		}
+		return false
 	}
 }

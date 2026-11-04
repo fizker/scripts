@@ -18,6 +18,7 @@ struct PromptSummaryCommand: AsyncParsableCommand {
 		let status = try await repo.status()
 		let branch = switch status.branch {
 			case .detached: "detached".italic()
+			case .rebasing: "rebasing".italic()
 			case let .named(name): name
 		}
 
