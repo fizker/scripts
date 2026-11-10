@@ -29,7 +29,11 @@ struct PromptSummaryCommand: AsyncParsableCommand {
 		case (true, true): " ↑↓"
 		}
 
-		print(" [\(branch.color(isDirty(status) ? .red : .green))\(remoteStatus)]")
+		let hookStatus = try await areHooksSetup()
+			? ""
+			: " Issue with hooks - run `git-install-hooks .`".color(.red).italic()
+
+		print(" [\(branch.color(isDirty(status) ? .red : .green))\(remoteStatus)]\(hookStatus)")
 	}
 
 	func isDirty(_ status: GitStatus) -> Bool {
@@ -46,5 +50,11 @@ struct PromptSummaryCommand: AsyncParsableCommand {
 			}
 		}
 		return false
+	}
+
+	func areHooksSetup() async throws -> Bool {
+		let cmd = Command("git-install-hooks")
+		let result = try await cmd.execute(arguments: ["--status", "--silent"])
+		return result.exitCode == 0
 	}
 }
