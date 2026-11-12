@@ -1,0 +1,11 @@
+[include]
+	path = "./alias.txt"
+[core]
+# default is less
+	pager = cat
+[pull]
+# don't auto-rebase when pulling
+	ff = only
+[fetch]
+# yay
+	prune = true

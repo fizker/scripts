@@ -3,8 +3,11 @@ git
 
 This folder contains various git-scripts.
 
-Most notably is [alias.txt](alias.txt), which is a mirror of the various git
-aliases that I use.
+It also includes my base standard git config file. Include it with
+`git config --global include.path "<path to scripts checkout>/git/config"`.
+If settings conflict, anything defined later overrides. So it might be useful to
+manually edit `~/.git/config` and ensure that the new `[include]` is located first
+in the file.
 
 
 Setting up the hooks
