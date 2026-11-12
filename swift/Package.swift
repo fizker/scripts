@@ -73,6 +73,12 @@ let package = Package(
 			swiftSettings: settings,
 		),
 		.target(name: "CFunctions"),
+
+		.testTarget(
+			name: "GitScriptsTests",
+			dependencies: ["GitScripts"],
+			swiftSettings: settings,
+		),
 		.testTarget(
 			name: "SharedTests",
 			dependencies: ["Shared"],
